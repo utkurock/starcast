@@ -3,27 +3,35 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
+// Env vars the app cannot run without. index.tsx renders a setup screen when any
+// are missing, so initialization below falls back to placeholders instead of throwing.
+export const REQUIRED_ENV_VARS = [
+  'VITE_FIREBASE_API_KEY',
+  'VITE_FIREBASE_AUTH_DOMAIN',
+  'VITE_FIREBASE_PROJECT_ID',
+  'VITE_FIREBASE_STORAGE_BUCKET',
+  'VITE_FIREBASE_MESSAGING_SENDER_ID',
+  'VITE_FIREBASE_APP_ID',
+] as const;
+
+export const missingEnvVars = REQUIRED_ENV_VARS.filter(
+  (key) => !import.meta.env[key]
+);
+
+export const isFirebaseConfigured = missingEnvVars.length === 0;
+
 // Normalize storage bucket domain: must be *.appspot.com for Firebase SDK
-const rawBucket = import.meta.env.VITE_FIREBASE_STORAGE_BUCKET;
-if (!rawBucket) {
-  throw new Error('VITE_FIREBASE_STORAGE_BUCKET environment variable is required');
-}
+const rawBucket = import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'unconfigured.appspot.com';
 const normalizedBucket = rawBucket.replace(/\.firebasestorage\.app$/i, '.appspot.com');
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'unconfigured',
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'unconfigured.firebaseapp.com',
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'unconfigured',
   storageBucket: normalizedBucket,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '0',
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || 'unconfigured',
 };
-
-// Validate required Firebase config
-if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
-  throw new Error('Firebase configuration is missing. Please set VITE_FIREBASE_API_KEY and VITE_FIREBASE_PROJECT_ID environment variables.');
-}
-
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);

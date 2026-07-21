@@ -17,7 +17,6 @@ export interface Market {
   };
   yesPrice?: number;
   noPrice?: number;
-  imageUrl?: string;
   trending?: boolean;
   yesBets?: number;
   noBets?: number;

@@ -189,7 +189,6 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({ children }) 
       creatorProfile: creatorProfile, // Add creator profile info
       yesPrice: marketData.yesPrice || 0.5,
       noPrice: marketData.noPrice || 0.5,
-      imageUrl: marketData.imageUrl || 'https://images.unsplash.com/photo-1612180339915-5a4a905e3a5b?q=80&w=2940&auto=format&fit=crop',
       trending: marketData.trending || false,
       yesBets: marketData.yesBets || 0,
       noBets: marketData.noBets || 0,

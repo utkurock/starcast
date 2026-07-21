@@ -182,7 +182,7 @@ const NewsManagement: React.FC = () => {
                         alt={item.title}
                         className="w-16 h-16 object-cover rounded-lg"
                         onError={(e) => {
-                          e.currentTarget.src = 'https://via.placeholder.com/150?text=No+Image';
+                          e.currentTarget.style.display = 'none';
                         }}
                       />
                     </td>

@@ -9,6 +9,7 @@ import { ToastProvider } from './contexts/ToastContext';
 import { useCustomModal } from './hooks/useCustomModal';
 import CustomModal from './components/CustomModal';
 import type { Market, NewMarket, Post, UserProfile } from './types';
+import { isFirebaseConfigured } from './firebase';
 
 // Component imports
 import Sidebar from './components/Sidebar';
@@ -22,8 +23,13 @@ import CryptoNewsFeed from './components/CryptoNewsFeed';
 import MarketTicker from './components/MarketTicker';
 import AdminDashboard from './components/AdminDashboard';
 
-// Query client configuration
-const queryClient = new QueryClient();
+// Query client configuration. Without Firebase credentials every request is going
+// to fail, so skip the retries and let the empty states show straight away.
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { retry: isFirebaseConfigured ? 3 : false },
+  },
+});
 
 const AppContent: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -65,7 +71,6 @@ const AppContent: React.FC = () => {
         question: newMarketData.question,
         yesPrice: 0.5,
         noPrice: 0.5,
-        imageUrl: 'https://images.unsplash.com/photo-1612180339915-5a4a905e3a5b?q=80&w=2940&auto=format&fit=crop',
         yesBets: 0,
         noBets: 0,
         trending: false,
@@ -124,9 +129,9 @@ const AppContent: React.FC = () => {
       <div className="h-screen font-sans bg-white text-gray-900 flex flex-col overflow-hidden">
         {/* Mobile Header - Only visible on mobile */}
         <div className="md:hidden sticky top-0 z-50 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-          {/* Logo - Clickable */}
-          <Link to="/social" className="flex items-center gap-2">
-            <img src="https://depmm6vsligdwkty.public.blob.vercel-storage.com/END.png" alt="Home" className="h-7 flex-shrink-0 object-contain" />
+          {/* Wordmark - Clickable */}
+          <Link to="/social" className="text-xl font-bold tracking-tight text-gray-900">
+            Rivarly
           </Link>
 
           {/* Hamburger Menu Button */}
