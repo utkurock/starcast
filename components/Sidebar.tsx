@@ -63,7 +63,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCreateMarket, isMobileMenuOpen, set
         `}>
             <Link to="/social" className="px-4 pt-4 pb-5 flex-shrink-0 border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer">
                 <div className="w-full flex items-center justify-center">
-                    <span className="text-2xl font-bold tracking-tight text-gray-900">Rivarly</span>
+                    <img src="/rivarly-logo.png" alt="Rivarly" className="h-8 w-auto object-contain" style={{ maxWidth: '80%' }} />
                 </div>
             </Link>
 

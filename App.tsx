@@ -129,9 +129,9 @@ const AppContent: React.FC = () => {
       <div className="h-screen font-sans bg-white text-gray-900 flex flex-col overflow-hidden">
         {/* Mobile Header - Only visible on mobile */}
         <div className="md:hidden sticky top-0 z-50 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-          {/* Wordmark - Clickable */}
-          <Link to="/social" className="text-xl font-bold tracking-tight text-gray-900">
-            Rivarly
+          {/* Logo - Clickable */}
+          <Link to="/social" className="flex items-center">
+            <img src="/rivarly-logo.png" alt="Rivarly" className="h-7 w-auto object-contain" />
           </Link>
 
           {/* Hamburger Menu Button */}
