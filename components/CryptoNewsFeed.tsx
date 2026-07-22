@@ -6,19 +6,24 @@ import type { NewsItem } from '../types';
 import { formatTimeAgo } from '../utils/time';
 import CoinIcon from './CoinIcon';
 
-// Merge admin-curated and public news, drop duplicate links, newest first.
+// Keep only the newest 20 items shown at once.
+const MAX_NEWS = 20;
+
+// Merge admin-curated and public news: images only, drop duplicate links,
+// newest first, capped at MAX_NEWS (older items fall off the bottom).
 const mergeNews = (...lists: NewsItem[][]): NewsItem[] => {
   const seen = new Set<string>();
   const merged: NewsItem[] = [];
   for (const item of lists.flat()) {
+    if (!item.image) continue; // no image, no card
     const key = item.link || item.id;
     if (!key || seen.has(key)) continue;
     seen.add(key);
     merged.push(item);
   }
-  return merged.sort(
-    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-  );
+  return merged
+    .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+    .slice(0, MAX_NEWS);
 };
 
 const CryptoNewsFeed: React.FC = () => {
@@ -154,7 +159,9 @@ const CryptoNewsFeed: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {news.map((newsItem) => {
               if (!newsItem || !newsItem.id || !newsItem.title) return null;
-              
+              // Image-only: skip items with no image or whose image failed to load.
+              if (!newsItem.image || imageErrors.has(newsItem.id)) return null;
+
               return (
                 <div
                   key={newsItem.id}
@@ -162,16 +169,14 @@ const CryptoNewsFeed: React.FC = () => {
                   className="bg-white rounded-xl border border-gray-200 overflow-hidden cursor-pointer hover:shadow-xl hover:border-gray-300 transition-all group/card"
                 >
                   {/* Image */}
-                  {newsItem.image && !imageErrors.has(newsItem.id) && (
-                    <div className="relative h-48 overflow-hidden bg-gray-100">
-                      <img
-                        src={newsItem.image}
-                        alt={newsItem.title}
-                        className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-500"
-                        onError={() => handleImageError(newsItem.id)}
-                      />
-                    </div>
-                  )}
+                  <div className="relative h-48 overflow-hidden bg-gray-100">
+                    <img
+                      src={newsItem.image}
+                      alt={newsItem.title}
+                      className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-500"
+                      onError={() => handleImageError(newsItem.id)}
+                    />
+                  </div>
 
                   {/* Content */}
                   <div className="p-5">

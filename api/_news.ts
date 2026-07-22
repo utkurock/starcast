@@ -74,17 +74,18 @@ const COINS: { code: string; re: RegExp }[] = [
 ];
 
 const UA = 'Mozilla/5.0 (compatible; Rivarly/1.0; +https://github.com/utkurock/rivarly)';
-const MAX_ITEMS_COIN = 15; // cap for a single-coin filter view
+const MAX_ITEMS = 20; // hard cap for every view; newest kept, older dropped
 const CACHE_TTL_MS = 5 * 60 * 1000;
 
-// Curated mix for the default "All" view: keep it focused instead of flooding
-// with generic crypto. [tag, count] — 'Crypto' means general (no specific coin).
+// Curated mix for the default "All" view: keep it Stellar-forward instead of
+// flooding with generic crypto. Same 3:2:2:2:1 proportion scaled to 20 items.
+// [tag, count] — 'Crypto' means general (no specific coin).
 const ALL_MIX: Array<[string, number]> = [
-  ['Crypto', 3],
-  ['XLM', 2],
-  ['BTC', 2],
-  ['ETH', 2],
-  ['SOL', 1],
+  ['Crypto', 6],
+  ['XLM', 4],
+  ['BTC', 4],
+  ['ETH', 4],
+  ['SOL', 2],
 ];
 const COIN_CODES = ['XLM', 'BTC', 'ETH', 'SOL'];
 
@@ -114,7 +115,10 @@ function extractImage(itemXml: string): string {
     /<media:thumbnail[^>]+url=["']([^"']+)["']/i,
     /<enclosure[^>]+url=["']([^"']+)["'][^>]*type=["']image/i,
     /<enclosure[^>]+type=["']image[^>]*url=["']([^"']+)["']/i,
-    /<img[^>]+src=["']([^"']+)["']/i, // inside content:encoded / description
+    /<image>\s*<url>([^<]+)<\/url>/i,                     // RSS <image><url>
+    /<img[^>]+src=["']([^"']+)["']/i,                     // inside content:encoded / description
+    /<img[^>]+data-(?:src|original|lazy-src)=["']([^"']+)["']/i, // lazy-loaded
+    /<img[^>]+srcset=["']([^"'\s]+)/i,                    // first srcset URL
   ];
   for (const re of patterns) {
     const m = itemXml.match(re);
@@ -204,6 +208,9 @@ export async function getNews(currency?: string): Promise<PublicNewsItem[]> {
   const results = await Promise.all(jobs);
   let items = results.flat();
 
+  // Only keep items that carry an image — no image, no card.
+  items = items.filter((it) => !!it.image);
+
   // When filtering by coin, keep only items actually tagged with that coin.
   if (code) items = items.filter((it) => it.tags.includes(code));
 
@@ -218,7 +225,8 @@ export async function getNews(currency?: string): Promise<PublicNewsItem[]> {
   }
   deduped.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
 
-  const out = code ? deduped.slice(0, MAX_ITEMS_COIN) : buildAllMix(deduped);
+  // Cap every view at MAX_ITEMS, keeping the newest (older ones fall off).
+  const out = code ? deduped.slice(0, MAX_ITEMS) : buildAllMix(deduped);
   if (out.length) cache.set(key, { t: Date.now(), data: out });
   return out.length ? out : cached?.data || [];
 }
