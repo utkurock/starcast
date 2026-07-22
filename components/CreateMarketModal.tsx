@@ -8,6 +8,18 @@ interface CreateMarketModalProps {
   onCreateMarket: (market: NewMarket) => void;
 }
 
+// Format a Date as a `datetime-local` value (YYYY-MM-DDTHH:mm) in the user's
+// local time. datetime-local inputs are always local wall-clock, so we must
+// not use toISOString() directly (that is UTC and shifts the value).
+const toLocalInputValue = (d: Date): string => {
+  const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+  return local.toISOString().slice(0, 16);
+};
+
+const ONE_HOUR_MS = 60 * 60 * 1000;
+// Upper bound so the year spinner can't run off to years like 123213.
+const MAX_YEARS_AHEAD = 5;
+
 const CreateMarketModal: React.FC<CreateMarketModalProps> = ({ isOpen, onClose, onCreateMarket }) => {
   // Form state
   const [question, setQuestion] = useState('');
@@ -34,14 +46,28 @@ const CreateMarketModal: React.FC<CreateMarketModalProps> = ({ isOpen, onClose, 
     }
   }, [isOpen]);
 
+  // Allowed expiry window: from 1 hour ahead up to MAX_YEARS_AHEAD, in local
+  // time. Recomputed each time the modal opens so it stays current.
+  const { minExpiry, maxExpiry } = useMemo(() => {
+    const now = Date.now();
+    const max = new Date(now);
+    max.setFullYear(max.getFullYear() + MAX_YEARS_AHEAD);
+    return {
+      minExpiry: toLocalInputValue(new Date(now + ONE_HOUR_MS)),
+      maxExpiry: toLocalInputValue(max),
+    };
+  }, [isOpen]);
+
   const basicsValid = useMemo(() => {
     const q = question.trim();
     if (q.length < 8 || q.length > 180) return false;
-    // Treat datetime-local as UTC by appending 'Z'
-    const expiry = new Date(`${expiryDate}Z`).getTime();
-    if (!expiry || expiry < Date.now() + 60 * 60 * 1000) return false;
+    // datetime-local is local wall-clock; parse it as local time (no 'Z').
+    const expiry = new Date(expiryDate).getTime();
+    if (!expiry) return false;
+    if (expiry < Date.now() + ONE_HOUR_MS) return false;
+    if (expiry > new Date(maxExpiry).getTime()) return false;
     return true;
-  }, [question, expiryDate]);
+  }, [question, expiryDate, maxExpiry]);
 
   const handleCreate = async () => {
     if (!basicsValid || isSubmitting) return;
@@ -143,12 +169,15 @@ const CreateMarketModal: React.FC<CreateMarketModalProps> = ({ isOpen, onClose, 
                 value={expiryDate}
                 onChange={(e) => setExpiryDate(e.target.value)}
                 className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-black transition-colors"
-                // Min in UTC
-                min={new Date().toISOString().slice(0,16)}
+                min={minExpiry}
+                max={maxExpiry}
               />
-              <p className="text-xs text-gray-500 mt-1.5">Minimum: 1 hour from now</p>
-              {!!expiryDate && new Date(`${expiryDate}Z`).getTime() < Date.now() + 60*60*1000 && (
-                <p className="mt-1.5 text-xs text-amber-600">Choose a time at least +1 hour.</p>
+              <p className="text-xs text-gray-500 mt-1.5">Minimum: 1 hour from now · up to {MAX_YEARS_AHEAD} years ahead</p>
+              {!!expiryDate && new Date(expiryDate).getTime() < Date.now() + ONE_HOUR_MS && (
+                <p className="mt-1.5 text-xs text-amber-600">Choose a time at least +1 hour from now.</p>
+              )}
+              {!!expiryDate && new Date(expiryDate).getTime() > new Date(maxExpiry).getTime() && (
+                <p className="mt-1.5 text-xs text-amber-600">Choose a date within {MAX_YEARS_AHEAD} years.</p>
               )}
             </div>
 

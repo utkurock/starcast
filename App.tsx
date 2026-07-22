@@ -64,8 +64,8 @@ const AppContent: React.FC = () => {
         title: newMarketData.question,
         category: newMarketData.category as any,
         probability: 0.5,
-        // Interpret datetime-local as UTC by appending 'Z'
-        resolvesAt: new Date(`${newMarketData.expiryDate}Z`).toISOString(),
+        // datetime-local is local wall-clock; parse as local time then store as ISO/UTC.
+        resolvesAt: new Date(newMarketData.expiryDate).toISOString(),
         status: 'open' as const,
         // Legacy fields for backward compatibility
         question: newMarketData.question,
