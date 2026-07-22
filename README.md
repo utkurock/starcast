@@ -36,10 +36,11 @@ cp .env.example .env
 the client build, so treat this as a soft gate rather than a real secret.
 
 The Hot News page pulls live public headlines from **Google News RSS** — no API key —
-including a dedicated Stellar (XLM) feed, merged with any admin-curated items. Because
-Google News RSS has no CORS headers, requests go through a CORS proxy; a public one is
-used by default. `VITE_NEWS_CORS_PROXY` optionally points this at your own proxy for
-production reliability (it must take a URL-encoded target and return the raw body).
+including a dedicated Stellar (XLM) feed, merged with any admin-curated items. Google
+News RSS has no CORS headers, so the browser calls our own `/api/news` endpoint, which
+fetches the RSS server-side — no third-party proxy. On Vercel this runs as the Edge
+function in [`api/news.ts`](api/news.ts); under `npm run dev` a Vite middleware serves
+the same route. Nothing to configure.
 
 ### 3. Run
 
@@ -53,6 +54,7 @@ npm run preview  # serve the production build
 ## Project structure
 
 ```
+api/               # serverless endpoints (Google News RSS proxy)
 App.tsx            # routes and layout
 index.tsx          # entry point
 firebase.ts        # Firebase app, auth, Firestore and Storage handles

@@ -2,31 +2,13 @@ import type { NewsItem } from '../types';
 
 // Public crypto news from Google News RSS — free and keyless.
 //
-// Google News RSS doesn't send CORS headers, so the browser can't fetch it
-// directly. We route requests through a CORS proxy. The default is a public
-// one; for production reliability set VITE_NEWS_CORS_PROXY to your own proxy
-// (any endpoint that takes a URL-encoded target and returns the raw body).
+// The browser can't fetch Google News RSS directly (no CORS headers), so requests
+// go to our own same-origin endpoint /api/news, which fetches the RSS server-side
+// (Vercel Edge function in api/news.ts; a Vite middleware serves it in dev). No
+// third-party proxy involved.
 
-const CORS_PROXY =
-  (import.meta.env.VITE_NEWS_CORS_PROXY as string | undefined) ||
-  'https://api.allorigins.win/raw?url=';
-
-// Public news is always available (no key required).
+// Public news is always available.
 export const hasPublicNews = true;
-
-// Search term used for each currency filter code.
-const QUERY_FOR: Record<string, string> = {
-  XLM: 'Stellar Lumens XLM crypto',
-  BTC: 'Bitcoin crypto',
-  ETH: 'Ethereum crypto',
-  SOL: 'Solana crypto',
-  XRP: 'XRP Ripple crypto',
-};
-
-const googleNewsUrl = (query: string): string =>
-  `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=en-US&gl=US&ceid=US:en`;
-
-const proxied = (url: string): string => `${CORS_PROXY}${encodeURIComponent(url)}`;
 
 const toIso = (pubDate: string): string => {
   const t = Date.parse(pubDate);
@@ -71,11 +53,11 @@ const parseRss = (xml: string, category: string): NewsItem[] => {
  */
 export const fetchPublicNews = async (currency?: string): Promise<NewsItem[]> => {
   const code = currency && currency !== 'ALL' ? currency : undefined;
-  const query = code ? QUERY_FOR[code] || `${code} crypto` : 'cryptocurrency';
   const category = code || 'Crypto';
 
   try {
-    const res = await fetch(proxied(googleNewsUrl(query)));
+    const qs = code ? `?currency=${encodeURIComponent(code)}` : '';
+    const res = await fetch(`/api/news${qs}`);
     if (!res.ok) return [];
     const xml = await res.text();
     return parseRss(xml, category);
