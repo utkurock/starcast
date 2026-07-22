@@ -492,7 +492,7 @@ const Profile: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-[#f8f9fa]">
-            <div className="max-w-3xl mx-auto px-4 py-4 md:py-8">
+            <div className="max-w-7xl mx-auto px-4 lg:px-6 py-4 md:py-8">
                 {/* Profile Card */}
                 <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
                     {/* Cover */}
