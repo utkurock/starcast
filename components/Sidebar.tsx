@@ -121,7 +121,19 @@ const Sidebar: React.FC<SidebarProps> = ({ onCreateMarket, isMobileMenuOpen, set
                     Ecosystem
                 </NavLink>
 
-                {/* 5. Leaderboard */}
+                {/* 5. Tasks */}
+                <NavLink
+                    to="/tasks"
+                    icon={
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+                            <path d="M11 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6"/>
+                            <path d="m9 11 3 3L22 4"/>
+                        </svg>
+                    }>
+                    Tasks
+                </NavLink>
+
+                {/* 6. Leaderboard */}
                 <NavLink
                     to="/leaderboard"
                     icon={
@@ -137,7 +149,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCreateMarket, isMobileMenuOpen, set
                     Leaderboard
                 </NavLink>
 
-                {/* 6. Profile */}
+                {/* 7. Profile */}
                 <NavLink
                     to="/profile"
                     icon={

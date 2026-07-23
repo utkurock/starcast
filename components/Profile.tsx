@@ -13,7 +13,6 @@ import FeedCard from './FeedCard';
 import { useCustomModal } from '../hooks/useCustomModal';
 import CustomModal from './CustomModal';
 import InfiniteScrollSentinel from './InfiniteScrollSentinel';
-import DailyClaimCard from './DailyClaimCard';
 
 // A single post-shaped loading placeholder.
 const SkeletonCard: React.FC = () => (
@@ -654,13 +653,6 @@ const Profile: React.FC = () => {
                         </div>
                     </div>
                 </div>
-
-                {/* Daily rewards — own profile only */}
-                {isViewingOwnProfile && (
-                    <div className="mt-6">
-                        <DailyClaimCard />
-                    </div>
-                )}
 
                 {/* Tabs */}
                 <div className="mt-6 flex justify-center">

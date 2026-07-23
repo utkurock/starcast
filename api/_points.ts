@@ -4,7 +4,8 @@
 
 import { FieldValue } from 'firebase-admin/firestore';
 import { getAdminDb, verifyUid } from './_adminFirebase';
-import { verifyAppTx, claimMemoHash, betMemoHash } from './_serverStellar';
+import { verifyAppTx, claimMemoHash, betMemoHash, taskMemoHash } from './_serverStellar';
+import { getTask } from '../services/taskCatalog';
 
 // Firestore doc-id / market-id safety: no path separators or control chars.
 const isSafeId = (s: string) => /^[A-Za-z0-9_-]{1,128}$/.test(s);
@@ -173,4 +174,51 @@ export async function handleBet(input: {
   }
 
   return { status: 200, body: { awarded, side, isNew } };
+}
+
+export async function handleTask(input: { idToken?: string; taskId?: string; txHash?: string }): Promise<HandlerResult> {
+  const db = getAdminDb();
+  if (!db) return { status: 503, body: { error: 'Tasks are not available right now.' } };
+
+  const uid = await verifyUid(input.idToken);
+  if (!uid) return { status: 401, body: { error: 'Not signed in.' } };
+
+  const taskId = typeof input.taskId === 'string' ? input.taskId : '';
+  if (!taskId || !isSafeId(taskId)) return { status: 400, body: { error: 'Invalid task.' } };
+
+  // The task (and its reward) come from the trusted catalog, never the client.
+  const task = getTask(taskId);
+  if (!task) return { status: 404, body: { error: 'Unknown task.' } };
+
+  const ref = db.collection('users').doc(uid);
+  const snap = await ref.get();
+  const data: any = snap.exists ? snap.data() : {};
+
+  // Each task can be completed once per user.
+  const completed = data.completedTasks || {};
+  if (completed[taskId]) return { status: 409, body: { error: 'You have already completed this task.' } };
+
+  const update: any = {
+    points: FieldValue.increment(task.points),
+    completedTasks: { [taskId]: FieldValue.serverTimestamp() },
+  };
+
+  // On-chain tasks require a verifiable, uid-bound tx from the linked wallet.
+  if (task.type === 'onchain') {
+    const wallet: string | undefined = data.walletAddress;
+    if (!wallet) return { status: 400, body: { error: 'Connect and link a Stellar wallet first.' } };
+
+    const txHash = typeof input.txHash === 'string' ? input.txHash : '';
+    if (!txHash || !isSafeId(txHash)) return { status: 400, body: { error: 'Invalid transaction.' } };
+
+    const verify = await verifyAppTx({ txHash, expectedSource: wallet, expectedMemoHash: taskMemoHash(uid, taskId) });
+    if (!verify.ok) return { status: 400, body: { error: verify.reason || 'Transaction could not be verified.' } };
+
+    update.taskTxHashes = { [taskId]: txHash };
+  }
+
+  await ref.set(update, { merge: true });
+  await bumpDailyLeaderboard(db, uid, data, task.points);
+
+  return { status: 200, body: { awarded: task.points, taskId } };
 }

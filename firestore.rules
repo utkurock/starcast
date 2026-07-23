@@ -11,10 +11,10 @@ service cloud.firestore {
       allow read: if true;
       allow create: if request.auth != null && request.auth.uid == userId
                     && !request.resource.data.keys().hasAny(
-                         ['points', 'streak', 'lastClaimAt', 'claimCount', 'lastClaimTxHash']);
+                         ['points', 'streak', 'lastClaimAt', 'claimCount', 'lastClaimTxHash', 'completedTasks', 'taskTxHashes']);
       allow update: if request.auth != null && request.auth.uid == userId
                     && !request.resource.data.diff(resource.data).affectedKeys().hasAny(
-                         ['points', 'streak', 'lastClaimAt', 'claimCount', 'lastClaimTxHash']);
+                         ['points', 'streak', 'lastClaimAt', 'claimCount', 'lastClaimTxHash', 'completedTasks', 'taskTxHashes']);
     }
 
     // Prediction markets: public read. A signed-in user may create a market they

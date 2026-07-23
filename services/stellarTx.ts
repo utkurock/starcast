@@ -11,6 +11,8 @@ export type BetSide = 'yes' | 'no';
 const claimMemo = (uid: string): Memo => Memo.hash(hash(Buffer.from(`claim:${uid}`)) as Buffer);
 const betMemoObj = (uid: string, marketId: string, side: BetSide): Memo =>
   Memo.hash(hash(Buffer.from(`bet:${side}:${marketId}:${uid}`)) as Buffer);
+const taskMemoObj = (uid: string, taskId: string): Memo =>
+  Memo.hash(hash(Buffer.from(`task:${taskId}:${uid}`)) as Buffer);
 
 // Fund a brand-new testnet account via friendbot so it can pay tx fees.
 async function fundWithFriendbot(address: string): Promise<void> {
@@ -94,3 +96,7 @@ export const submitDailyClaimTx = (address: string, uid: string, sign: (xdr: str
 /** Market prediction tx (memo bound to uid + market + side). Returns the tx hash. */
 export const submitBetTx = (address: string, uid: string, marketId: string, side: BetSide, sign: (xdr: string) => Promise<string>) =>
   submitMemoTx(address, betMemoObj(uid, marketId, side), sign);
+
+/** Task completion tx (memo bound to uid + taskId). Returns the tx hash. */
+export const submitTaskTx = (address: string, uid: string, taskId: string, sign: (xdr: string) => Promise<string>) =>
+  submitMemoTx(address, taskMemoObj(uid, taskId), sign);
