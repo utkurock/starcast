@@ -85,7 +85,10 @@ const DailyClaimCard: React.FC = () => {
               <span className="text-3xl md:text-4xl font-bold tabular-nums">{fmt(points)}</span>
               {streak > 0 && (
                 <span className="inline-flex items-center gap-1 text-sm font-semibold text-amber-400">
-                  <span>🔥</span>{streak}d
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+                  </svg>
+                  {streak}d
                 </span>
               )}
             </div>

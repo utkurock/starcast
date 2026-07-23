@@ -4,7 +4,31 @@ import { useFirebase } from '../contexts/FirebaseContext';
 import { getAllTimeLeaderboard, getDailyLeaderboard, type LeaderboardEntry } from '../services/leaderboardService';
 
 const fmt = (n: number) => n.toLocaleString('en-US');
-const MEDALS = ['🥇', '🥈', '🥉'];
+
+// Gold / silver / bronze medal icon for the top 3; plain number otherwise.
+const RANK_COLORS = ['#EAB308', '#94A3B8', '#B45309'];
+const RankBadge: React.FC<{ rank: number }> = ({ rank }) => {
+  if (rank <= 3) {
+    return (
+      <svg className="w-6 h-6 mx-auto" viewBox="0 0 24 24" fill="none" stroke={RANK_COLORS[rank - 1]} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="8" r="6" />
+        <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" />
+      </svg>
+    );
+  }
+  return <span className="text-sm font-bold text-gray-400">{rank}</span>;
+};
+
+const TrophyIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+    <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+    <path d="M4 22h16" />
+    <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
+    <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+    <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+  </svg>
+);
 
 const Avatar: React.FC<{ entry: LeaderboardEntry }> = ({ entry }) => {
   const [failed, setFailed] = useState(false);
@@ -26,7 +50,7 @@ const Row: React.FC<{ entry: LeaderboardEntry; rank: number; isMe: boolean }> = 
     className={`flex items-center gap-3 px-4 py-3 transition-colors ${isMe ? 'bg-amber-50' : 'hover:bg-gray-50'}`}
   >
     <div className="w-8 text-center flex-shrink-0">
-      {rank <= 3 ? <span className="text-xl">{MEDALS[rank - 1]}</span> : <span className="text-sm font-bold text-gray-400">{rank}</span>}
+      <RankBadge rank={rank} />
     </div>
     <Avatar entry={entry} />
     <div className="flex-1 min-w-0">
@@ -69,7 +93,7 @@ const Leaderboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#f8f9fa]">
-      {/* Top bar */}
+      {/* Top bar — same layout as the Ecosystem page */}
       <div className="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-gray-200">
         <div className="max-w-3xl mx-auto px-4 lg:px-6 py-4">
           <div className="flex items-center justify-between flex-wrap gap-3">
@@ -79,19 +103,22 @@ const Leaderboard: React.FC = () => {
                 {myRank ? `You're ranked #${myRank}` : 'Earn points with daily claims and predictions'}
               </p>
             </div>
-            <div className="inline-flex p-1 bg-gray-100 rounded-full">
-              {(['daily', 'alltime'] as const).map((t) => (
-                <button
-                  key={t}
-                  onClick={() => setTab(t)}
-                  className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${
-                    tab === t ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'
-                  }`}
-                >
-                  {t === 'daily' ? 'Today' : 'All-time'}
-                </button>
-              ))}
-            </div>
+            <TrophyIcon className="w-6 h-6 text-amber-500" />
+          </div>
+
+          {/* Tabs */}
+          <div className="mt-4 flex gap-2">
+            {(['daily', 'alltime'] as const).map((t) => (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                className={`px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                  tab === t ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {t === 'daily' ? 'Today' : 'All-time'}
+              </button>
+            ))}
           </div>
         </div>
       </div>
@@ -111,7 +138,9 @@ const Leaderboard: React.FC = () => {
           </div>
         ) : list.length === 0 ? (
           <div className="text-center py-20">
-            <div className="mx-auto w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-4 text-3xl">🏆</div>
+            <div className="mx-auto w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-4 text-gray-400">
+              <TrophyIcon className="w-8 h-8" />
+            </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-1">No rankings yet</h3>
             <p className="text-sm text-gray-500">
               {tab === 'daily' ? 'Be the first to earn points today.' : 'Claim daily rewards and make predictions to climb the board.'}
