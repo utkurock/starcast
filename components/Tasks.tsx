@@ -10,29 +10,50 @@ import { WalletPicker } from './WalletButton';
 
 const fmt = (n: number) => n.toLocaleString('en-US');
 
-// Small round glyph per task type.
-const TaskIcon: React.FC<{ type: TaskDef['type'] }> = ({ type }) => {
-  const common = 'w-5 h-5';
-  if (type === 'onchain') {
-    return (
-      <svg className={common} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M4 7h13m0 0-3-3m3 3-3 3M20 17H7m0 0 3-3m-3 3 3 3" />
-      </svg>
-    );
-  }
-  if (type === 'link') {
-    return (
-      <svg className={common} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 010 5.656l-3 3a4 4 0 01-5.656-5.656l1.5-1.5M10.172 13.828a4 4 0 010-5.656l3-3a4 4 0 015.656 5.656l-1.5 1.5" />
-      </svg>
-    );
-  }
-  return (
-    <svg className={common} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+// A distinct icon per task, matching the sidebar nav's line-icon style. The X
+// task uses the brand glyph (filled) so it reads instantly.
+const TASK_ICONS: Record<string, React.ReactNode> = {
+  'send-tx': (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+      <path d="M22 2 11 13" />
+      <path d="M22 2 15 22l-4-9-9-4Z" />
     </svg>
-  );
+  ),
+  'visit-ecosystem': (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+      <circle cx="18" cy="5" r="3" />
+      <circle cx="6" cy="12" r="3" />
+      <circle cx="18" cy="19" r="3" />
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+    </svg>
+  ),
+  'read-news': (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+      <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" />
+      <path d="M18 14h-8" /><path d="M15 18h-5" /><path d="M10 6h8v4h-8V6Z" />
+    </svg>
+  ),
+  'post-social': (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+    </svg>
+  ),
+  'follow-x': (
+    <svg className="w-[18px] h-[18px]" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  ),
 };
+
+const TaskIcon: React.FC<{ id: string }> = ({ id }) => (
+  <>{TASK_ICONS[id] ?? (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+      <path d="M11 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6" />
+      <path d="m9 11 3 3L22 4" />
+    </svg>
+  )}</>
+);
 
 const TaskRow: React.FC<{
   task: TaskDef;
@@ -92,7 +113,7 @@ const TaskRow: React.FC<{
     <div className={`group bg-white rounded-2xl border shadow-sm transition-all p-5 ${done ? 'border-emerald-100' : 'border-gray-200 hover:border-gray-300 hover:shadow-md'}`}>
       <div className="flex items-start gap-4">
         <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${done ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-100 text-gray-600'}`}>
-          <TaskIcon type={task.type} />
+          <TaskIcon id={task.id} />
         </div>
 
         <div className="flex-1 min-w-0">
@@ -189,7 +210,7 @@ const Tasks: React.FC = () => {
     <div className="min-h-screen bg-[#f8f9fa]">
       {/* Top bar */}
       <div className="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-gray-200">
-        <div className="max-w-3xl mx-auto px-4 lg:px-6 py-4">
+        <div className="max-w-6xl mx-auto px-4 lg:px-6 py-4">
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div>
               <h1 className="text-xl font-bold text-gray-900">Tasks</h1>
