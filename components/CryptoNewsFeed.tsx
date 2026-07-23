@@ -64,7 +64,7 @@ const CryptoNewsFeed: React.FC = () => {
       if (publicNews.length) {
         setNews(mergeNews(publicNews));
         // Write-through so the next visitor gets it instantly.
-        writeNewsCache(currency, publicNews);
+        writeNewsCache(currency);
       }
       setLoading(false);
 

@@ -82,11 +82,12 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // Public news cache: one doc per view (ALL/XLM/BTC/ETH/SOL). Read by anyone
-    // for instant paint; written by any signed-in user (write-through refresh).
+    // Public news cache: public read for instant paint; writes only via the
+    // trusted /api/news-cache endpoint (Admin), which writes the server's own
+    // aggregated feed — so the cache can't be poisoned with injected items.
     match /newsCache/{view} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if false;
     }
 
     // Market predictions: public read; only the trusted server (Admin SDK, which

@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { db, isFirebaseConfigured } from '../firebase';
 import type { NewsItem } from '../types';
 
@@ -55,13 +55,17 @@ export const readNewsCache = async (currency?: string): Promise<NewsItem[]> => {
   }
 };
 
-/** Write-through: store the freshest news for a view. Fire-and-forget. */
-export const writeNewsCache = async (currency: string | undefined, items: NewsItem[]): Promise<void> => {
-  if (!isFirebaseConfigured || !items.length) return;
+/**
+ * Ask the trusted server to refresh a view's cache. The server writes its own
+ * aggregated feed (not client content), so the cache can't be poisoned.
+ * Fire-and-forget.
+ */
+export const writeNewsCache = async (currency?: string): Promise<void> => {
   try {
-    await setDoc(doc(db, 'newsCache', cacheKey(currency)), {
-      items,
-      updatedAt: serverTimestamp(),
+    await fetch('/api/news-cache', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ view: cacheKey(currency) }),
     });
   } catch {
     // Non-fatal: caching is a best-effort optimization.

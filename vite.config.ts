@@ -69,20 +69,23 @@ function devRewardApi(): Plugin {
       };
       server.middlewares.use('/api/claim', handle('handleClaim'));
       server.middlewares.use('/api/bet', handle('handleBet'));
-      server.middlewares.use('/api/admin-news', async (req: IncomingMessage, res: any) => {
-        res.setHeader('content-type', 'application/json; charset=utf-8');
-        if (req.method !== 'POST') { res.statusCode = 405; res.end(JSON.stringify({ error: 'Method not allowed' })); return; }
-        try {
-          const body = await readJsonBody(req);
-          const { handleAdminNews } = await import('./api/_adminNews');
-          const { status, body: out } = await handleAdminNews(body);
-          res.statusCode = status;
-          res.end(JSON.stringify(out));
-        } catch {
-          res.statusCode = 500;
-          res.end(JSON.stringify({ error: 'Server error' }));
-        }
-      });
+      const post = (name: string, importer: () => Promise<(b: any) => Promise<{ status: number; body: any }>>) =>
+        async (req: IncomingMessage, res: any) => {
+          res.setHeader('content-type', 'application/json; charset=utf-8');
+          if (req.method !== 'POST') { res.statusCode = 405; res.end(JSON.stringify({ error: 'Method not allowed' })); return; }
+          try {
+            const body = await readJsonBody(req);
+            const fn = await importer();
+            const { status, body: out } = await fn(body);
+            res.statusCode = status;
+            res.end(JSON.stringify(out));
+          } catch {
+            res.statusCode = 500;
+            res.end(JSON.stringify({ error: 'Server error' }));
+          }
+        };
+      server.middlewares.use('/api/admin-news', post('admin-news', async () => (await import('./api/_adminNews')).handleAdminNews));
+      server.middlewares.use('/api/news-cache', post('news-cache', async () => (await import('./api/_newsCache')).refreshNewsCache));
     },
   };
 }
