@@ -95,7 +95,7 @@ const Leaderboard: React.FC = () => {
     <div className="min-h-screen bg-[#f8f9fa]">
       {/* Top bar — same layout as the Ecosystem page */}
       <div className="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-gray-200">
-        <div className="max-w-3xl mx-auto px-4 lg:px-6 py-4">
+        <div className="max-w-6xl mx-auto px-4 lg:px-6 py-4">
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div>
               <h1 className="text-xl font-bold text-gray-900">Leaderboard</h1>

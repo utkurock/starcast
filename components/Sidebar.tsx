@@ -62,25 +62,14 @@ const Sidebar: React.FC<SidebarProps> = ({ onCreateMarket, isMobileMenuOpen, set
             md:translate-x-0 transition-transform duration-300 ease-in-out
             ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
         `}>
-            <Link to="/social" className="px-4 pt-4 pb-5 flex-shrink-0 border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer">
+            <Link to="/" className="px-4 pt-4 pb-5 flex-shrink-0 border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer">
                 <div className="w-full flex items-center justify-center">
                     <img src="/rivarly-logo.png" alt="Rivarly" className="h-8 w-auto object-contain" style={{ maxWidth: '80%' }} />
                 </div>
             </Link>
 
             <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto"  style={{ scrollbarWidth: 'thin' }}>
-                {/* 1. Social */}
-                <NavLink
-                    to="/social"
-                    icon={
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
-                            <path d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4"/>
-                        </svg>
-                    }>
-                    Social
-                </NavLink>
-
-                {/* 2. Markets */}
+                {/* 1. Markets (home) */}
                 <NavLink
                     to="/"
                     icon={
@@ -92,6 +81,17 @@ const Sidebar: React.FC<SidebarProps> = ({ onCreateMarket, isMobileMenuOpen, set
                         </svg>
                     }>
                     Markets
+                </NavLink>
+
+                {/* 2. Social */}
+                <NavLink
+                    to="/social"
+                    icon={
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+                            <path d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4"/>
+                        </svg>
+                    }>
+                    Social
                 </NavLink>
 
                 {/* 3. Hot News */}
