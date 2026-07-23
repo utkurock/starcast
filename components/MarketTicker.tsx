@@ -52,8 +52,8 @@ const MarketTicker: React.FC = () => {
           // Use mock data when permission denied
           setMarkets([
             { id: '1', title: 'Bitcoin Price', question: 'Will Bitcoin reach $100k?', category: 'Crypto', probability: 0.65, volumeUSD: 50000 },
-            { id: '2', title: 'New iPhone Launch', question: 'Will Apple launch a foldable iPhone this year?', category: 'Technology', probability: 0.52, volumeUSD: 45000 },
-            { id: '3', title: 'App Milestone', question: 'Will the app reach 1M users?', category: 'App', probability: 0.75, volumeUSD: 30000 },
+            { id: '2', title: 'Stellar TVL', question: 'Will Stellar DeFi TVL top $500M this year?', category: 'Ecosystem', probability: 0.52, volumeUSD: 45000 },
+            { id: '3', title: 'XLM Rally', question: 'Will XLM close above $0.50 this quarter?', category: 'Crypto', probability: 0.75, volumeUSD: 30000 },
           ]);
         } else {
           console.error('Error fetching top markets:', error);

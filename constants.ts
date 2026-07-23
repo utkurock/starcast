@@ -1,1 +1,1 @@
-export const CATEGORIES = ['All', 'Crypto', 'Technology', 'App', 'Other'];
+export const CATEGORIES = ['All', 'Crypto', 'Ecosystem', 'Other'];

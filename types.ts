@@ -1,7 +1,7 @@
 export interface Market {
   id: string;
   title: string;
-  category: 'Crypto' | 'Technology' | 'App' | 'Other';
+  category: 'Crypto' | 'Ecosystem' | 'Other';
   probability: number;           // 0..1
   sourceUrl?: string;            // external source link
   sources?: string[];            // array of source URLs
