@@ -66,7 +66,7 @@ const TaskRow: React.FC<{
   const button = () => {
     if (done) {
       return (
-        <span className="inline-flex items-center gap-1.5 px-3.5 h-9 rounded-lg bg-emerald-50 text-emerald-700 text-sm font-semibold">
+        <span className="inline-flex items-center gap-1.5 px-3.5 h-9 rounded-lg bg-emerald-500/10 text-emerald-400 text-sm font-semibold">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
@@ -79,9 +79,9 @@ const TaskRow: React.FC<{
         <button
           onClick={onClaim}
           disabled={busy}
-          className="px-3.5 h-9 flex items-center gap-2 rounded-lg bg-gray-900 hover:bg-black text-white text-sm font-semibold transition-colors disabled:opacity-60"
+          className="px-3.5 h-9 flex items-center gap-2 rounded-lg bg-white hover:bg-gray-200 text-[#0b0c0e] text-sm font-semibold transition-colors disabled:opacity-60"
         >
-          {busy && <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />}
+          {busy && <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#0b0c0e]" />}
           {busy ? 'Confirming…' : task.cta}
         </button>
       );
@@ -91,7 +91,7 @@ const TaskRow: React.FC<{
       return (
         <button
           onClick={onStart}
-          className="px-3.5 h-9 flex items-center rounded-lg bg-gray-900 hover:bg-black text-white text-sm font-semibold transition-colors"
+          className="px-3.5 h-9 flex items-center rounded-lg bg-white hover:bg-gray-200 text-[#0b0c0e] text-sm font-semibold transition-colors"
         >
           {task.cta}
         </button>
@@ -110,23 +110,23 @@ const TaskRow: React.FC<{
   };
 
   return (
-    <div className={`group bg-white rounded-2xl border shadow-sm transition-all p-5 ${done ? 'border-emerald-100' : 'border-gray-200 hover:border-gray-300 hover:shadow-md'}`}>
+    <div className={`group bg-[#141519] rounded-2xl border shadow-sm transition-all p-5 ${done ? 'border-emerald-500/20' : 'border-[#262830] hover:border-[#33353d] hover:shadow-md'}`}>
       <div className="flex items-start gap-4">
-        <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${done ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-100 text-gray-600'}`}>
+        <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${done ? 'bg-emerald-500/10 text-emerald-400' : 'bg-[#1c1d22] text-[#9b9ca4]'}`}>
           <TaskIcon id={task.id} />
         </div>
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="text-base font-bold text-gray-900">{task.title}</h3>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 text-xs font-semibold">
+            <h3 className="text-base font-bold text-[#ececee]">{task.title}</h3>
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-400 text-xs font-semibold">
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7.4L12 16.9 5.7 21.4 8 14 2 9.4h7.6z" />
               </svg>
               +{task.points}
             </span>
           </div>
-          <p className="mt-1.5 text-sm text-gray-600 leading-relaxed">{task.description}</p>
+          <p className="mt-1.5 text-sm text-[#9b9ca4] leading-relaxed">{task.description}</p>
         </div>
 
         <div className="flex-shrink-0 self-center">{button()}</div>
@@ -207,18 +207,18 @@ const Tasks: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa]">
+    <div className="min-h-screen bg-[#0b0c0e]">
       {/* Top bar */}
-      <div className="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-gray-200">
+      <div className="sticky top-0 z-20 bg-[#0b0c0e]/80 backdrop-blur border-b border-[#262830]">
         <div className="max-w-6xl mx-auto px-4 lg:px-6 py-4">
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Tasks</h1>
-              <p className="text-sm text-gray-500 mt-0.5">
+              <h1 className="text-xl font-bold text-[#ececee]">Tasks</h1>
+              <p className="text-sm text-[#9b9ca4] mt-0.5">
                 {doneCount}/{TASKS.length} done · up to {fmt(totalReward)} points to earn
               </p>
             </div>
-            <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gray-900 text-white">
+            <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#1c1d22] text-[#ececee] border border-[#262830]">
               <svg className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7.4L12 16.9 5.7 21.4 8 14 2 9.4h7.6z" />
               </svg>
@@ -231,7 +231,7 @@ const Tasks: React.FC = () => {
       {/* Body */}
       <div className="max-w-3xl mx-auto px-4 lg:px-6 py-6">
         {(flash || error) && (
-          <div className={`mb-4 px-4 py-3 rounded-xl text-sm font-medium ${flash ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-600'}`}>
+          <div className={`mb-4 px-4 py-3 rounded-xl text-sm font-medium ${flash ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>
             {flash || error}
           </div>
         )}
@@ -250,7 +250,7 @@ const Tasks: React.FC = () => {
           ))}
         </div>
 
-        <p className="mt-6 text-center text-xs text-gray-400">
+        <p className="mt-6 text-center text-xs text-[#6d6e77]">
           Points are awarded server-side. On-chain tasks are verified on Stellar.
         </p>
       </div>

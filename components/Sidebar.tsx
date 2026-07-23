@@ -19,11 +19,11 @@ const NavLink: React.FC<{ to: string; icon: React.ReactNode; children: React.Rea
             onClick={onClick}
             className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg transition-all duration-200 ${
                 isActive
-                    ? 'bg-gray-100 font-medium text-[#111111]'
-                    : 'text-[#999999] hover:bg-gray-50 hover:text-[#111111]'
+                    ? 'bg-[#1c1d22] font-medium text-[#ececee]'
+                    : 'text-[#8b8d98] hover:bg-[#141519] hover:text-[#ececee]'
             }`}
         >
-            <span className={`flex-shrink-0 ${isActive ? '[&_img]:brightness-0' : ''}`}>
+            <span className="flex-shrink-0">
                 {icon}
             </span>
             <span className="text-sm">{children}</span>
@@ -49,20 +49,20 @@ const Sidebar: React.FC<SidebarProps> = ({ onCreateMarket, isMobileMenuOpen, set
         {/* Mobile Overlay */}
         {isMobileMenuOpen && (
             <div
-                className="md:hidden fixed inset-0 bg-black/50 z-40"
+                className="md:hidden fixed inset-0 bg-black/60 z-40"
                 onClick={() => setIsMobileMenuOpen(false)}
             />
         )}
 
         {/* Sidebar */}
         <aside className={`
-            fixed md:sticky top-0 h-full md:h-full w-64 bg-white border-r border-gray-200 flex-shrink-0 flex flex-col z-50
+            fixed md:sticky top-0 h-full md:h-full w-64 bg-[#0b0c0e] border-r border-[#20222a] flex-shrink-0 flex flex-col z-50
             md:translate-x-0 transition-transform duration-300 ease-in-out
             ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
         `}>
-            <Link to="/" className="px-4 pt-4 pb-5 flex-shrink-0 border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer">
+            <Link to="/" className="px-4 pt-4 pb-5 flex-shrink-0 border-b border-[#20222a] hover:bg-[#141519] transition-colors cursor-pointer">
                 <div className="w-full flex items-center justify-center">
-                    <img src="/rivarly-logo.png" alt="Rivarly" className="h-8 w-auto object-contain" style={{ maxWidth: '80%' }} />
+                    <img src="/rivarly-logo.png" alt="Rivarly" className="h-8 w-auto object-contain logo-invert" style={{ maxWidth: '80%' }} />
                 </div>
             </Link>
 
@@ -162,7 +162,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCreateMarket, isMobileMenuOpen, set
                 </NavLink>
             </nav>
 
-            <div className="flex-shrink-0 p-4 border-t border-gray-100">
+            <div className="flex-shrink-0 p-4 border-t border-[#20222a]">
                  {/* Combined wallet + profile account menu */}
                  <AccountMenu onNavigate={() => setIsMobileMenuOpen(false)} />
             </div>

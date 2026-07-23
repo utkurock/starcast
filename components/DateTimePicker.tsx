@@ -129,19 +129,19 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({ value, onChange, min, m
       <button
         type="button"
         onClick={() => setOpen(o => !o)}
-        className={`w-full flex items-center justify-between px-4 py-2.5 bg-gray-50 border rounded-lg text-left transition-colors ${
-          open ? 'border-black ring-1 ring-black/10' : 'border-gray-200 hover:border-gray-300'
+        className={`w-full flex items-center justify-between px-4 py-2.5 bg-[#1c1d22] border rounded-lg text-left transition-colors ${
+          open ? 'border-[#33353d] ring-1 ring-white/10' : 'border-[#262830] hover:border-[#33353d]'
         }`}
       >
-        <span className={selected ? 'text-gray-900' : 'text-gray-400'}>{label}</span>
-        <svg className="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <span className={selected ? 'text-[#ececee]' : 'text-[#6d6e77]'}>{label}</span>
+        <svg className="w-5 h-5 text-[#6d6e77] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
       </button>
 
       {/* Popover */}
       {open && (
-        <div className="absolute z-30 mt-2 w-full max-w-md bg-white rounded-2xl border border-gray-200 shadow-xl p-4 animate-dtp-in">
+        <div className="absolute z-30 mt-2 w-full max-w-md bg-[#141519] rounded-2xl border border-[#262830] shadow-xl p-4 animate-dtp-in">
           <div className="flex gap-4">
             {/* Calendar */}
             <div className="flex-1 min-w-0">
@@ -150,16 +150,16 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({ value, onChange, min, m
                   type="button"
                   disabled={prevDisabled}
                   onClick={() => setView(new Date(viewYear, viewMonth - 1, 1))}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="w-8 h-8 flex items-center justify-center rounded-lg text-[#9b9ca4] hover:bg-[#1c1d22] disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
                 </button>
-                <div className="text-sm font-semibold text-gray-900">{MONTHS[viewMonth]} {viewYear}</div>
+                <div className="text-sm font-semibold text-[#ececee]">{MONTHS[viewMonth]} {viewYear}</div>
                 <button
                   type="button"
                   disabled={nextDisabled}
                   onClick={() => setView(new Date(viewYear, viewMonth + 1, 1))}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="w-8 h-8 flex items-center justify-center rounded-lg text-[#9b9ca4] hover:bg-[#1c1d22] disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
                 </button>
@@ -167,7 +167,7 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({ value, onChange, min, m
 
               <div className="grid grid-cols-7 gap-0.5 mb-1">
                 {WEEKDAYS.map(d => (
-                  <div key={d} className="h-7 flex items-center justify-center text-[11px] font-medium text-gray-400">{d}</div>
+                  <div key={d} className="h-7 flex items-center justify-center text-[11px] font-medium text-[#6d6e77]">{d}</div>
                 ))}
               </div>
 
@@ -185,13 +185,13 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({ value, onChange, min, m
                       onClick={() => selectDay(d)}
                       className={`h-9 w-9 mx-auto flex items-center justify-center rounded-lg text-sm transition-colors ${
                         isSel
-                          ? 'bg-black text-white font-semibold'
+                          ? 'bg-white text-[#0b0c0e] font-semibold'
                           : disabled
-                            ? 'text-gray-300 cursor-not-allowed'
+                            ? 'text-[#4a4c56] cursor-not-allowed'
                             : inMonth
-                              ? 'text-gray-900 hover:bg-gray-100'
-                              : 'text-gray-400 hover:bg-gray-100'
-                      } ${!isSel && isToday ? 'ring-1 ring-gray-300' : ''}`}
+                              ? 'text-[#ececee] hover:bg-[#1c1d22]'
+                              : 'text-[#6d6e77] hover:bg-[#1c1d22]'
+                      } ${!isSel && isToday ? 'ring-1 ring-[#33353d]' : ''}`}
                     >
                       {d.getDate()}
                     </button>
@@ -201,11 +201,11 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({ value, onChange, min, m
             </div>
 
             {/* Time columns */}
-            <div className="flex gap-2 border-l border-gray-100 pl-3">
+            <div className="flex gap-2 border-l border-[#262830] pl-3">
               {([['H', HOURS, selectHour, hourDisabled, refDay.getHours()], ['M', MINUTES, selectMinute, minuteDisabled, refDay.getMinutes()]] as const).map(
                 ([key, items, onPick, isDisabled, current]) => (
                   <div key={key} className="flex flex-col items-center">
-                    <div className="text-[11px] font-medium text-gray-400 mb-1">{key === 'H' ? 'Hr' : 'Min'}</div>
+                    <div className="text-[11px] font-medium text-[#6d6e77] mb-1">{key === 'H' ? 'Hr' : 'Min'}</div>
                     <div className="h-[248px] w-11 overflow-y-auto dtp-scroll space-y-0.5 pr-1">
                       {(items as number[]).map(n => {
                         const active = selected && current === n;
@@ -218,10 +218,10 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({ value, onChange, min, m
                             onClick={() => (onPick as (n: number) => void)(n)}
                             className={`w-full py-1.5 rounded-md text-sm transition-colors ${
                               active
-                                ? 'bg-black text-white font-semibold'
+                                ? 'bg-white text-[#0b0c0e] font-semibold'
                                 : dis
-                                  ? 'text-gray-300 cursor-not-allowed'
-                                  : 'text-gray-700 hover:bg-gray-100'
+                                  ? 'text-[#4a4c56] cursor-not-allowed'
+                                  : 'text-[#9b9ca4] hover:bg-[#1c1d22]'
                             }`}
                           >
                             {pad(n)}
@@ -236,18 +236,18 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({ value, onChange, min, m
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+          <div className="flex items-center justify-between mt-3 pt-3 border-t border-[#262830]">
             <button
               type="button"
               onClick={() => { onChange(''); }}
-              className="text-sm text-gray-500 hover:text-gray-900 font-medium transition-colors"
+              className="text-sm text-[#9b9ca4] hover:text-white font-medium transition-colors"
             >
               Clear
             </button>
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="px-4 py-1.5 rounded-lg bg-black hover:bg-gray-800 text-white text-sm font-semibold transition-colors"
+              className="px-4 py-1.5 rounded-lg bg-white hover:bg-gray-200 text-[#0b0c0e] text-sm font-semibold transition-colors"
             >
               Done
             </button>
@@ -259,7 +259,7 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({ value, onChange, min, m
         @keyframes dtp-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
         .animate-dtp-in { animation: dtp-in 0.15s ease-out forwards; }
         .dtp-scroll::-webkit-scrollbar { width: 5px; }
-        .dtp-scroll::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 999px; }
+        .dtp-scroll::-webkit-scrollbar-thumb { background: #33353d; border-radius: 999px; }
         .dtp-scroll::-webkit-scrollbar-track { background: transparent; }
       `}</style>
     </div>

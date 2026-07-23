@@ -169,26 +169,26 @@ const PostDetail: React.FC = () => {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-[#f8f9fa] flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
+            <div className="min-h-screen bg-[#0b0c0e] flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
             </div>
         );
     }
 
     if (error || !post) {
         return (
-            <div className="min-h-screen bg-[#f8f9fa] flex flex-col items-center justify-center px-4">
+            <div className="min-h-screen bg-[#0b0c0e] flex flex-col items-center justify-center px-4">
                 <div className="max-w-md w-full text-center">
-                    <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
-                        <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-20 h-20 mx-auto mb-6 bg-[#1c1d22] rounded-full flex items-center justify-center">
+                        <svg className="w-10 h-10 text-[#6d6e77]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-3">Post Not Found</h2>
-                    <p className="text-gray-600 mb-6">{error || 'This post might have been deleted or the link is incorrect.'}</p>
+                    <h2 className="text-2xl font-bold text-[#ececee] mb-3">Post Not Found</h2>
+                    <p className="text-[#9b9ca4] mb-6">{error || 'This post might have been deleted or the link is incorrect.'}</p>
                     <button
                         onClick={() => navigate('/social')}
-                        className="px-6 py-3 bg-black hover:bg-gray-800 !text-white font-semibold rounded-lg transition-colors shadow-sm"
+                        className="px-6 py-3 bg-white hover:bg-gray-200 !text-[#0b0c0e] font-semibold rounded-lg transition-colors shadow-sm"
                     >
                         Back to Feed
                     </button>
@@ -198,15 +198,15 @@ const PostDetail: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-white flex">
+        <div className="min-h-screen bg-[#0b0c0e] flex">
             {/* Main Content - No vertical borders */}
-            <div className="flex-1 bg-white border-r border-gray-200">
+            <div className="flex-1 bg-[#141519] border-r border-[#262830]">
                 {/* Header with back button */}
-                <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-md border-b border-gray-200">
+                <div className="sticky top-0 z-10 bg-[#0b0c0e]/80 backdrop-blur-md border-b border-[#262830]">
                     <div className="px-6 py-3">
                         <button
                             onClick={() => navigate(-1)}
-                            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors group p-2 -ml-2"
+                            className="flex items-center gap-2 text-[#9b9ca4] hover:text-white transition-colors group p-2 -ml-2"
                         >
                             <svg className="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -224,13 +224,13 @@ const PostDetail: React.FC = () => {
             </div>
 
             {/* Right Sidebar - Same as Social Feed */}
-            <div className="hidden lg:block w-[350px] bg-white border-l border-gray-200">
+            <div className="hidden lg:block w-[350px] bg-[#141519] border-l border-[#262830]">
                 <div className="sticky top-0 max-h-screen overflow-y-auto overscroll-contain">
                     {/* Search Bar */}
                     <div className="p-4 border-b border-transparent">
                         <div className="relative">
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="h-5 w-5 text-[#6d6e77]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
                             </div>
@@ -239,28 +239,28 @@ const PostDetail: React.FC = () => {
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Search"
-                                className="w-full pl-10 pr-4 py-2.5 bg-gray-100 border-0 rounded-full text-gray-900 placeholder-gray-500 text-sm focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#23DD9A] focus:ring-opacity-20 transition-all"
+                                className="w-full pl-10 pr-4 py-2.5 bg-[#1c1d22] border-0 rounded-full text-[#ececee] placeholder-gray-500 text-sm focus:outline-none focus:bg-[#141519] focus:ring-2 focus:ring-[#23DD9A] focus:ring-opacity-20 transition-all"
                             />
                         </div>
                         {/* Search Results */}
                         {searchResults.length > 0 && (
-                            <div className="mt-3 bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                            <div className="mt-3 bg-[#141519] border border-[#262830] rounded-xl overflow-hidden shadow-sm">
                                 {searchResults.map(u => (
                                     <button
                                         key={u.uid}
                                         onClick={() => navigate(`/profile/${u.uid}`)}
-                                        className="w-full flex items-center gap-3 px-3 py-2 hover:bg-gray-50 text-left"
+                                        className="w-full flex items-center gap-3 px-3 py-2 hover:bg-[#1c1d22] text-left"
                                     >
-                                        <div className="w-8 h-8 rounded-full bg-gray-200 overflow-hidden flex items-center justify-center">
+                                        <div className="w-8 h-8 rounded-full bg-[#262830] overflow-hidden flex items-center justify-center">
                                             {u.avatar ? (
                                                 <img src={u.avatar} alt={u.username} className="w-full h-full object-cover" />
                                             ) : (
-                                                <span className="text-xs font-bold text-gray-500">{u.username?.[0]?.toUpperCase() || 'U'}</span>
+                                                <span className="text-xs font-bold text-[#9b9ca4]">{u.username?.[0]?.toUpperCase() || 'U'}</span>
                                             )}
                                         </div>
                                         <div className="min-w-0">
-                                            <div className="text-sm font-semibold text-gray-900 truncate">{u.username}</div>
-                                            <div className="text-xs text-gray-500 truncate">
+                                            <div className="text-sm font-semibold text-[#ececee] truncate">{u.username}</div>
+                                            <div className="text-xs text-[#9b9ca4] truncate">
                                                 {u.handle && u.handle.trim() ? `@${u.handle}` : `@${u.uid.slice(0,6)}...${u.uid.slice(-4)}`}
                                             </div>
                                         </div>
@@ -271,11 +271,11 @@ const PostDetail: React.FC = () => {
                     </div>
 
                     {/* Trading Activity */}
-                    <div className="p-4 pb-6 border-b border-gray-100">
-                        <h3 className="font-bold text-gray-900 mb-4">Trading Activity</h3>
+                    <div className="p-4 pb-6 border-b border-[#262830]">
+                        <h3 className="font-bold text-[#ececee] mb-4">Trading Activity</h3>
                         <div className="space-y-3 max-h-[640px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
                             {recentTrades.length === 0 ? (
-                                <div className="text-sm text-gray-500 py-4 text-center">No recent trades</div>
+                                <div className="text-sm text-[#9b9ca4] py-4 text-center">No recent trades</div>
                             ) : (
                                 recentTrades.map(trade => {
                                     const m = marketCache[trade.marketId];
@@ -303,21 +303,21 @@ const PostDetail: React.FC = () => {
                                     return (
                                         <div 
                                             key={trade.id} 
-                                            className="flex items-start gap-2.5 p-2.5 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors" 
+                                            className="flex items-start gap-2.5 p-2.5 rounded-lg hover:bg-[#1c1d22] cursor-pointer transition-colors" 
                                             onClick={() => navigate(`/market/${trade.marketId}`)}
                                         >
                                             <div className={`mt-1 flex-shrink-0 w-2 h-2 rounded-full ${trade.side === 'YES' ? 'bg-[#23DD9A]' : 'bg-[#FF1010]'}`}></div>
                                             <div className="flex-1 min-w-0">
-                                                <div className="text-sm font-semibold text-gray-900 leading-snug">
+                                                <div className="text-sm font-semibold text-[#ececee] leading-snug">
                                                     <span className={trade.side === 'YES' ? 'text-[#23DD9A]' : 'text-[#FF1010]'}>
                                                         {trade.side}
                                                     </span>
                                                     {' '}${trade.amount.toFixed(2)}
                                                 </div>
-                                                <div className="text-xs text-gray-600 mt-0.5 truncate">
+                                                <div className="text-xs text-[#9b9ca4] mt-0.5 truncate">
                                                     {marketTitle}
                                                 </div>
-                                                <div className="text-xs text-gray-500 mt-1">
+                                                <div className="text-xs text-[#9b9ca4] mt-1">
                                                     @{userAddressShort} • {(m as any)?.category || 'Market'} • {formatTimeAgo(tradeDate)}
                                                 </div>
                                             </div>

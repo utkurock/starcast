@@ -51,8 +51,8 @@ const CustomModal: React.FC<CustomModalProps> = ({
     switch (type) {
       case 'success':
         return (
-          <div className="w-16 h-16 mx-auto mb-4 bg-black rounded-full flex items-center justify-center">
-            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-16 h-16 mx-auto mb-4 bg-white rounded-full flex items-center justify-center">
+            <svg className="w-8 h-8 text-[#0b0c0e]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
             </svg>
           </div>
@@ -83,8 +83,8 @@ const CustomModal: React.FC<CustomModalProps> = ({
         );
       case 'confirm':
         return (
-          <div className="w-16 h-16 mx-auto mb-4 bg-black rounded-full flex items-center justify-center">
-            <span className="text-white text-3xl font-bold">$</span>
+          <div className="w-16 h-16 mx-auto mb-4 bg-white rounded-full flex items-center justify-center">
+            <span className="text-[#0b0c0e] text-3xl font-bold">$</span>
           </div>
         );
       case 'delete':
@@ -114,7 +114,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
       onClick={onClose}
     >
       <div 
-        className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 animate-scale-up border border-gray-200 relative"
+        className="bg-[#141519] rounded-2xl shadow-2xl max-w-md w-full p-8 animate-scale-up border border-[#262830] relative"
         style={{ maxHeight: '90vh', overflowY: 'auto' }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -122,13 +122,13 @@ const CustomModal: React.FC<CustomModalProps> = ({
         {getIcon()}
 
         {/* Title */}
-        <h3 className="text-2xl font-bold text-gray-900 text-center mb-3">
+        <h3 className="text-2xl font-bold text-[#ececee] text-center mb-3">
           {title}
         </h3>
 
         {/* Message */}
         {message && (
-          <div className="text-gray-600 text-center mb-6 leading-relaxed whitespace-pre-line">
+          <div className="text-[#9b9ca4] text-center mb-6 leading-relaxed whitespace-pre-line">
             {typeof message === 'string' ? <p>{message}</p> : message}
           </div>
         )}
@@ -139,16 +139,16 @@ const CustomModal: React.FC<CustomModalProps> = ({
             <>
               <button
                 onClick={onClose}
-                className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-all"
+                className="flex-1 px-6 py-3 border-2 border-[#262830] text-[#9b9ca4] rounded-xl font-semibold hover:bg-[#1c1d22] transition-all"
               >
                 {cancelText}
               </button>
               <button
                 onClick={handleConfirm}
-                className={`flex-1 px-6 py-3 !text-white rounded-xl font-semibold transition-all shadow-lg ${
-                  type === 'delete' 
-                    ? 'bg-red-500 hover:bg-red-600' 
-                    : 'bg-black hover:bg-gray-800'
+                className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-all shadow-lg ${
+                  type === 'delete'
+                    ? 'bg-red-500 hover:bg-red-600 !text-white'
+                    : 'bg-white hover:bg-gray-200 !text-[#0b0c0e]'
                 }`}
               >
                 {confirmText}
@@ -157,7 +157,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
           ) : (
             <button
               onClick={onClose}
-              className="w-full px-6 py-3 bg-black !text-white rounded-xl font-semibold hover:bg-gray-800 transition-all shadow-lg"
+              className="w-full px-6 py-3 bg-white !text-[#0b0c0e] rounded-xl font-semibold hover:bg-gray-200 transition-all shadow-lg"
             >
               {confirmText}
             </button>

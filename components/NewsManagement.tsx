@@ -9,7 +9,7 @@ const NewsManagement: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingNews, setEditingNews] = useState<NewsItem | null>(null);
-  
+
   // Form state
   const [formData, setFormData] = useState({
     title: '',
@@ -132,12 +132,12 @@ const NewsManagement: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">News Management</h2>
-          <p className="text-gray-600 mt-1">Create and manage news items for the platform</p>
+          <h2 className="text-2xl font-bold text-[#ececee]">News Management</h2>
+          <p className="text-[#9b9ca4] mt-1">Create and manage news items for the platform</p>
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="px-4 py-2 bg-black hover:bg-gray-800 !text-white font-semibold rounded-lg transition-colors flex items-center gap-2"
+          className="px-4 py-2 bg-white hover:bg-gray-200 !text-[#0b0c0e] font-semibold rounded-lg transition-colors flex items-center gap-2"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -147,35 +147,35 @@ const NewsManagement: React.FC = () => {
       </div>
 
       {/* News List */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="bg-[#141519] rounded-xl border border-[#262830] shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-[#1c1d22]">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Image</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Title</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Source</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Category</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Published Date & Time</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#9b9ca4] uppercase tracking-wider">Image</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#9b9ca4] uppercase tracking-wider">Title</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#9b9ca4] uppercase tracking-wider">Source</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#9b9ca4] uppercase tracking-wider">Category</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#9b9ca4] uppercase tracking-wider">Published Date & Time</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#9b9ca4] uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-[#262830]">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan={6} className="px-6 py-8 text-center text-[#9b9ca4]">
                     Loading news...
                   </td>
                 </tr>
               ) : news.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan={6} className="px-6 py-8 text-center text-[#9b9ca4]">
                     No news items yet. Create your first one!
                   </td>
                 </tr>
               ) : (
                 news.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={item.id} className="hover:bg-[#1c1d22] transition-colors">
                     <td className="px-6 py-4">
                       <img
                         src={item.image}
@@ -188,27 +188,27 @@ const NewsManagement: React.FC = () => {
                     </td>
                     <td className="px-6 py-4">
                       <div className="max-w-xs">
-                        <div className="text-sm font-medium text-gray-900 truncate">{item.title}</div>
-                        <div className="text-xs text-gray-500 mt-1 truncate">{item.description}</div>
+                        <div className="text-sm font-medium text-[#ececee] truncate">{item.title}</div>
+                        <div className="text-xs text-[#9b9ca4] mt-1 truncate">{item.description}</div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900 font-medium">{item.source}</div>
+                      <div className="text-sm text-[#ececee] font-medium">{item.source}</div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="px-2 py-1 text-xs font-semibold bg-gray-100 text-gray-700 rounded">
+                      <span className="px-2 py-1 text-xs font-semibold bg-[#1c1d22] text-[#9b9ca4] rounded">
                         {item.category}
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900">
+                      <div className="text-sm text-[#ececee]">
                         {new Date(item.publishedAt).toLocaleDateString('en-US', {
                           year: 'numeric',
                           month: 'short',
                           day: 'numeric',
                         })}
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-[#9b9ca4]">
                         {new Date(item.publishedAt).toLocaleTimeString('en-US', {
                           hour: '2-digit',
                           minute: '2-digit',
@@ -219,13 +219,13 @@ const NewsManagement: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleOpenModal(item)}
-                          className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 text-sm font-medium rounded-lg transition-colors"
+                          className="px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-sm font-medium rounded-lg transition-colors"
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => handleDelete(item.id)}
-                          className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-sm font-medium rounded-lg transition-colors"
+                          className="px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-sm font-medium rounded-lg transition-colors"
                         >
                           Delete
                         </button>
@@ -242,14 +242,14 @@ const NewsManagement: React.FC = () => {
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[9998] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-              <h3 className="text-xl font-bold text-gray-900">
+          <div className="bg-[#141519] rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-[#141519] border-b border-[#262830] px-6 py-4 flex items-center justify-between">
+              <h3 className="text-xl font-bold text-[#ececee]">
                 {editingNews ? 'Edit News' : 'Create News'}
               </h3>
               <button
                 onClick={handleCloseModal}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-[#6d6e77] hover:text-[#ececee] transition-colors"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -259,28 +259,28 @@ const NewsManagement: React.FC = () => {
 
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Title <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-[#9b9ca4] mb-2">
+                  Title <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-black transition-colors"
+                  className="w-full px-4 py-2 bg-[#1c1d22] border border-[#262830] rounded-lg text-[#ececee] focus:outline-none focus:border-white transition-colors"
                   placeholder="Enter news title"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Image URL <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-[#9b9ca4] mb-2">
+                  Image URL <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="url"
                   value={formData.image}
                   onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-black transition-colors"
+                  className="w-full px-4 py-2 bg-[#1c1d22] border border-[#262830] rounded-lg text-[#ececee] focus:outline-none focus:border-white transition-colors"
                   placeholder="https://example.com/image.jpg"
                   required
                 />
@@ -297,13 +297,13 @@ const NewsManagement: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Description <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-[#9b9ca4] mb-2">
+                  Description <span className="text-red-400">*</span>
                 </label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-black transition-colors resize-none"
+                  className="w-full px-4 py-2 bg-[#1c1d22] border border-[#262830] rounded-lg text-[#ececee] focus:outline-none focus:border-white transition-colors resize-none"
                   placeholder="Enter news description"
                   rows={4}
                   required
@@ -311,28 +311,28 @@ const NewsManagement: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Link <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-[#9b9ca4] mb-2">
+                  Link <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="url"
                   value={formData.link}
                   onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-black transition-colors"
+                  className="w-full px-4 py-2 bg-[#1c1d22] border border-[#262830] rounded-lg text-[#ececee] focus:outline-none focus:border-white transition-colors"
                   placeholder="https://example.com/news-article"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Source <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-[#9b9ca4] mb-2">
+                  Source <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.source}
                   onChange={(e) => setFormData({ ...formData, source: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-black transition-colors"
+                  className="w-full px-4 py-2 bg-[#1c1d22] border border-[#262830] rounded-lg text-[#ececee] focus:outline-none focus:border-white transition-colors"
                   placeholder="e.g., Cointelegraph, CoinDesk, Bloomberg"
                   required
                 />
@@ -340,13 +340,13 @@ const NewsManagement: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Category (Token) <span className="text-red-500">*</span>
+                  <label className="block text-sm font-medium text-[#9b9ca4] mb-2">
+                    Category (Token) <span className="text-red-400">*</span>
                   </label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-black transition-colors"
+                    className="w-full px-4 py-2 bg-[#1c1d22] border border-[#262830] rounded-lg text-[#ececee] focus:outline-none focus:border-white transition-colors"
                     required
                   >
                     {categories.map((cat) => (
@@ -358,30 +358,30 @@ const NewsManagement: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Published Date & Time <span className="text-red-500">*</span>
+                  <label className="block text-sm font-medium text-[#9b9ca4] mb-2">
+                    Published Date & Time <span className="text-red-400">*</span>
                   </label>
                   <input
                     type="datetime-local"
                     value={formData.publishedAt}
                     onChange={(e) => setFormData({ ...formData, publishedAt: e.target.value })}
-                    className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-black transition-colors"
+                    className="w-full px-4 py-2 bg-[#1c1d22] border border-[#262830] rounded-lg text-[#ececee] focus:outline-none focus:border-white transition-colors"
                     required
                   />
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
+              <div className="flex items-center gap-3 pt-4 border-t border-[#262830]">
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-black hover:bg-gray-800 !text-white font-semibold rounded-lg transition-colors"
+                  className="flex-1 px-4 py-2 bg-white hover:bg-gray-200 !text-[#0b0c0e] font-semibold rounded-lg transition-colors"
                 >
                   {editingNews ? 'Update News' : 'Create News'}
                 </button>
                 <button
                   type="button"
                   onClick={handleCloseModal}
-                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg transition-colors"
+                  className="px-4 py-2 bg-[#1c1d22] hover:bg-[#262830] text-[#9b9ca4] font-semibold rounded-lg transition-colors"
                 >
                   Cancel
                 </button>
@@ -395,4 +395,3 @@ const NewsManagement: React.FC = () => {
 };
 
 export default NewsManagement;
-

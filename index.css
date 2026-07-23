@@ -8,8 +8,8 @@
 
 body {
   font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background-color: #f8f9fa;
-  color: #111827;
+  background-color: #0b0c0e;
+  color: #ececee;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -22,289 +22,27 @@ body {
   min-height: 100vh;
 }
 
-/* Dark mode styles */
-.dark body {
-  background-color: #111827;
-  color: #F9FAFB;
+/* The wordmark PNG is dark ink — flip it to read on the dark UI. */
+.logo-invert {
+  filter: brightness(0) invert(1);
 }
 
-/* Light mode specific styles */
-.light body {
-  background-color: #ffffff;
-  color: #111827;
-}
-
-/* Light mode component backgrounds */
-.light .bg-\[#1a1f2e\] {
-  background-color: #f8fafc !important;
-}
-
-.light .bg-\[#1e2532\] {
-  background-color: #ffffff !important;
-}
-
-.light .bg-\[#1E2430\] {
-  background-color: #ffffff !important;
-}
-
-.light .bg-gray-800 {
-  background-color: #e9ecef !important;
-}
-
-.light .bg-gray-700 {
-  background-color: #dee2e6 !important;
-}
-
-.light .bg-gray-600 {
-  background-color: #adb5bd !important;
-}
-
-.light .bg-gray-900 {
-  background-color: #ffffff !important;
-}
-
-.light .bg-gray-100 {
-  background-color: #f8fafc !important;
-}
-
-.light .bg-gray-50 {
-  background-color: #ffffff !important;
-}
-
-/* Light mode text colors */
-.light .text-white {
-  color: #111827 !important;
-}
-
-/* Keep white text on black/dark backgrounds in light mode */
-.light .bg-black .text-white,
-.light .bg-black.text-white,
-.light .bg-gray-900 .text-white,
-.light .bg-gray-900.text-white,
-.light [class*="bg-black"] .text-white,
-.light [class*="bg-black"].text-white,
-.light [class*="bg-gray-900"] .text-white,
-.light [class*="bg-gray-900"].text-white {
-  color: #ffffff !important;
-}
-
-/* Force white text on black backgrounds */
-.bg-black,
-.bg-gray-900 {
-  color: #ffffff !important;
-}
-
-.bg-black .text-white,
-.bg-gray-900 .text-white,
-.bg-black.text-white,
-.bg-gray-900.text-white {
-  color: #ffffff !important;
-}
-
-.light .text-gray-400 {
-  color: #6c757d !important;
-}
-
-.light .text-gray-300 {
-  color: #495057 !important;
-}
-
-.light .text-gray-500 {
-  color: #6c757d !important;
-}
-
-.light .text-gray-200 {
-  color: #495057 !important;
-}
-
-.light .text-gray-100 {
-  color: #495057 !important;
-}
-
-/* Light mode borders */
-.light .border-gray-800 {
-  border-color: #e9ecef !important;
-}
-
-.light .border-white\/5 {
-  border-color: #e9ecef !important;
-}
-
-.light .border-white\/10 {
-  border-color: #dee2e6 !important;
-}
-
-.light .border-gray-200 {
-  border-color: #e9ecef !important;
-}
-
-.light .border-gray-300 {
-  border-color: #dee2e6 !important;
-}
-
-/* Light mode hover states */
-.light .hover\:bg-gray-700:hover {
-  background-color: #dee2e6 !important;
-}
-
-.light .hover\:bg-gray-600:hover {
-  background-color: #adb5bd !important;
-}
-
-.light .hover\:bg-gray-800:hover {
-  background-color: #e9ecef !important;
-}
-
-.light .hover\:bg-gray-900:hover {
-  background-color: #f8fafc !important;
-}
-
-/* Light mode button styles */
-.light .bg-blue-500 {
-  background-color: #3b82f6 !important;
-}
-
-.light .bg-emerald-500 {
-  background-color: #10b981 !important;
-}
-
-.light .bg-emerald-600 {
-  background-color: #059669 !important;
-}
-
-.light .bg-red-500 {
-  background-color: #ef4444 !important;
-}
-
-.light .bg-green-500 {
-  background-color: #22c55e !important;
-}
-
-.light .bg-yellow-500 {
-  background-color: #eab308 !important;
-}
-
-/* Light mode shadows and borders */
-.light .shadow-sm {
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
-}
-
-.light .shadow-md {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-}
-
-/* Light mode specific component overrides */
-.light .bg-\[#2A3242\] {
-  background-color: #f8fafc !important;
-}
-
-.light .bg-\[#333B4D\] {
-  background-color: #e9ecef !important;
-}
-
-.light .text-white\/70 {
-  color: #495057 !important;
-}
-
-.light .text-white\/50 {
-  color: #6c757d !important;
-}
-
-.light .text-blue-400 {
-  color: #3b82f6 !important;
-}
-
-.light .text-emerald-400 {
-  color: #10b981 !important;
-}
-
-.light .text-red-400 {
-  color: #ef4444 !important;
-}
-
-.light .text-green-400 {
-  color: #22c55e !important;
-}
-
-.light .text-yellow-400 {
-  color: #eab308 !important;
-}
-
-/* Light mode divide colors */
-.light .divide-white\/5 > * + * {
-  border-color: #e9ecef !important;
-}
-
-.light .divide-gray-800 > * + * {
-  border-color: #e9ecef !important;
-}
-
-/* Light mode backdrop blur */
-.light .backdrop-blur-lg {
-  backdrop-filter: blur(16px);
-}
-
-.light .backdrop-blur-md {
-  backdrop-filter: blur(12px);
-}
-
-/* Light mode sidebar specific */
-.light .bg-background-card {
-  background-color: #ffffff !important;
-}
-
-.light .bg-background-hover {
-  background-color: #f8fafc !important;
-}
-
-.light .bg-background-body {
-  background-color: #ffffff !important;
-}
-
-.light .text-text-primary {
-  color: #111827 !important;
-}
-
-.light .text-text-secondary {
-  color: #6c757d !important;
-}
-
-.light .border-border-default {
-  border-color: #e9ecef !important;
-}
-
-.light .bg-base-blue {
-  background-color: #3b82f6 !important;
-}
-
-/* Custom scrollbar styling */
+/* Custom scrollbar styling (dark) */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #F3F4F6;
-}
-
-.dark ::-webkit-scrollbar-track {
-  background: #374151;
+  background: #141519;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #6B7280;
+  background: #2c2e37;
   border-radius: 4px;
 }
 
-.dark ::-webkit-scrollbar-thumb {
-  background: #9CA3AF;
-}
-
 ::-webkit-scrollbar-thumb:hover {
-  background: #111827;
-}
-
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: #F9FAFB;
+  background: #3a3d47;
 }
 
 /* Smooth scrolling for all scrollable elements */

@@ -26,6 +26,7 @@ import Tasks from './components/Tasks';
 import Leaderboard from './components/Leaderboard';
 import MarketTicker from './components/MarketTicker';
 import AdminDashboard from './components/AdminDashboard';
+import Onboarding from './components/Onboarding';
 
 // Query client configuration. Without Firebase credentials every request is going
 // to fail, so skip the retries and let the empty states show straight away.
@@ -130,26 +131,26 @@ const AppContent: React.FC = () => {
 
   return (
     <BrowserRouter>
-      <div className="h-screen font-sans bg-white text-gray-900 flex flex-col overflow-hidden">
+      <div className="h-screen font-sans bg-[#0b0c0e] text-[#ececee] flex flex-col overflow-hidden">
         {/* Mobile Header - Only visible on mobile */}
-        <div className="md:hidden sticky top-0 z-50 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+        <div className="md:hidden sticky top-0 z-50 bg-[#0b0c0e] border-b border-[#262830] px-4 py-3 flex items-center justify-between">
           {/* Logo - Clickable */}
           <Link to="/social" className="flex items-center">
-            <img src="/rivarly-logo.png" alt="Rivarly" className="h-7 w-auto object-contain" />
+            <img src="/rivarly-logo.png" alt="Rivarly" className="h-7 w-auto object-contain logo-invert" />
           </Link>
 
           {/* Hamburger Menu Button */}
           <button
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-[#1c1d22] rounded-lg transition-colors"
             aria-label="Toggle menu"
           >
             {isSidebarOpen ? (
-              <svg className="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-[#ececee]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             ) : (
-              <svg className="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-[#ececee]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             )}
@@ -227,6 +228,9 @@ const AppContent: React.FC = () => {
           onClose={() => setIsModalOpen(false)}
           onCreateMarket={handleCreateMarket}
         />
+
+        {/* First-run onboarding */}
+        <Onboarding />
 
         {/* Custom Modal */}
         <CustomModal
