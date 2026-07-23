@@ -96,14 +96,11 @@ const Leaderboard: React.FC = () => {
       {/* Top bar — same layout as the Ecosystem page */}
       <div className="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 lg:px-6 py-4">
-          <div className="flex items-center justify-between flex-wrap gap-3">
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">Leaderboard</h1>
-              <p className="text-sm text-gray-500 mt-0.5">
-                {myRank ? `You're ranked #${myRank}` : 'Earn points with daily claims and predictions'}
-              </p>
-            </div>
-            <TrophyIcon className="w-6 h-6 text-amber-500" />
+          <div>
+            <h1 className="text-xl font-bold text-gray-900">Leaderboard</h1>
+            <p className="text-sm text-gray-500 mt-0.5">
+              {myRank ? `You're ranked #${myRank}` : 'Earn points with daily claims and predictions'}
+            </p>
           </div>
 
           {/* Tabs */}
