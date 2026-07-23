@@ -1,0 +1,68 @@
+// Trusted reward logic shared by the Vercel function (api/claim.ts) and the
+// Vite dev middleware. All points writes happen here via Firebase Admin after
+// on-chain verification, so the client can never grant itself points.
+
+import { FieldValue } from 'firebase-admin/firestore';
+import { getAdminDb } from './_adminFirebase';
+import { verifyAppTx, CLAIM_MEMO } from './_serverStellar';
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+const DAILY_BASE = 100;
+const STREAK_BONUS = 20;
+const STREAK_BONUS_CAP = 6;
+
+const rewardForStreak = (streak: number): number =>
+  DAILY_BASE + Math.min(Math.max(streak - 1, 0), STREAK_BONUS_CAP) * STREAK_BONUS;
+
+export interface HandlerResult {
+  status: number;
+  body: Record<string, unknown>;
+}
+
+export async function handleClaim(input: { uid?: string; txHash?: string }): Promise<HandlerResult> {
+  const uid = typeof input.uid === 'string' ? input.uid : '';
+  const txHash = typeof input.txHash === 'string' ? input.txHash : '';
+  if (!uid || !txHash) return { status: 400, body: { error: 'Missing uid or txHash.' } };
+
+  const db = getAdminDb();
+  if (!db) return { status: 503, body: { error: 'Rewards are not available right now.' } };
+
+  const ref = db.collection('users').doc(uid);
+  const snap = await ref.get();
+  const data: any = snap.exists ? snap.data() : {};
+
+  const wallet: string | undefined = data.walletAddress;
+  if (!wallet) return { status: 400, body: { error: 'Connect and link a Stellar wallet first.' } };
+
+  // Anti-replay: a given tx can fund only one claim.
+  if (data.lastClaimTxHash && data.lastClaimTxHash === txHash) {
+    return { status: 409, body: { error: 'This transaction has already been used.' } };
+  }
+
+  // Server-enforced 24h cooldown.
+  const lastMs = data.lastClaimAt?.toMillis ? data.lastClaimAt.toMillis() : 0;
+  if (lastMs && Date.now() - lastMs < DAY_MS) {
+    return { status: 429, body: { error: 'You have already claimed today.' } };
+  }
+
+  // On-chain verification.
+  const verify = await verifyAppTx({ txHash, expectedSource: wallet, expectedMemo: CLAIM_MEMO });
+  if (!verify.ok) return { status: 400, body: { error: verify.reason || 'Transaction could not be verified.' } };
+
+  const continuing = lastMs > 0 && Date.now() - lastMs < 2 * DAY_MS;
+  const streak = continuing ? (data.streak || 0) + 1 : 1;
+  const reward = rewardForStreak(streak);
+
+  await ref.set(
+    {
+      points: FieldValue.increment(reward),
+      streak,
+      claimCount: FieldValue.increment(1),
+      lastClaimAt: FieldValue.serverTimestamp(),
+      lastClaimTxHash: txHash,
+    },
+    { merge: true }
+  );
+
+  return { status: 200, body: { reward, streak } };
+}

@@ -1,9 +1,9 @@
-import { doc, onSnapshot, setDoc, serverTimestamp, increment, getDoc, type Timestamp } from 'firebase/firestore';
+import { doc, onSnapshot, type Timestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 
-// NOTE: points are written client-side to the user's own doc. That's fine for a
-// testnet gamified MVP but is cheatable; real anti-cheat needs a Cloud Function
-// validating the claim tx server-side before awarding points. Tracked for later.
+// Points are awarded ONLY by the trusted server endpoint (/api/claim), which
+// verifies the on-chain claim tx and writes via Firebase Admin. The client just
+// reads points for display and triggers the claim — it can't grant itself any.
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 export const DAILY_BASE = 100;
@@ -63,34 +63,27 @@ export const getClaimState = (data: PointsData, now: number = Date.now()): Claim
   };
 };
 
-export class ClaimCooldownError extends Error {}
+export class ClaimError extends Error {}
 
 /**
- * Record a successful daily claim: award points, advance the streak, stamp the
- * claim time and the on-chain tx hash. Re-reads server state to guard the
- * cooldown against a stale local snapshot.
+ * Ask the trusted server to award the daily claim for a verified on-chain tx.
+ * The server re-verifies the tx, enforces the cooldown and writes the points.
  */
 export const recordDailyClaim = async (uid: string, txHash: string): Promise<{ reward: number; streak: number }> => {
-  const ref = doc(db, 'users', uid);
-  const snap = await getDoc(ref);
-  const data = parse(snap.exists() ? snap.data() : {});
-  const state = getClaimState(data);
-
-  if (!state.canClaim) {
-    throw new ClaimCooldownError('You have already claimed today.');
+  let res: Response;
+  try {
+    res = await fetch('/api/claim', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ uid, txHash }),
+    });
+  } catch {
+    throw new ClaimError('Could not reach the rewards server. Please try again.');
   }
 
-  await setDoc(
-    ref,
-    {
-      points: increment(state.nextReward),
-      streak: state.nextStreak,
-      claimCount: increment(1),
-      lastClaimAt: serverTimestamp(),
-      lastClaimTxHash: txHash,
-    },
-    { merge: true }
-  );
-
-  return { reward: state.nextReward, streak: state.nextStreak };
+  const out = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new ClaimError(out.error || 'Claim could not be verified.');
+  }
+  return { reward: out.reward, streak: out.streak };
 };

@@ -1,5 +1,6 @@
 import path from 'path';
-import { defineConfig, type Plugin } from 'vite';
+import type { IncomingMessage } from 'http';
+import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import { getNews } from './api/_news';
 import { getEcosystemProjects } from './api/_ecosystem';
@@ -36,13 +37,53 @@ function devEcosystemApi(): Plugin {
   };
 }
 
-export default defineConfig(() => {
+const readJsonBody = (req: IncomingMessage): Promise<any> =>
+  new Promise((resolve) => {
+    let raw = '';
+    req.on('data', (c) => (raw += c));
+    req.on('end', () => {
+      try { resolve(raw ? JSON.parse(raw) : {}); } catch { resolve({}); }
+    });
+  });
+
+// Serve the trusted reward endpoints during dev (mirrors the Vercel Node
+// functions). handleClaim is imported lazily so firebase-admin only loads when
+// an endpoint is actually hit.
+function devRewardApi(): Plugin {
+  return {
+    name: 'dev-reward-api',
+    configureServer(server) {
+      server.middlewares.use('/api/claim', async (req, res) => {
+        res.setHeader('content-type', 'application/json; charset=utf-8');
+        if (req.method !== 'POST') { res.statusCode = 405; res.end(JSON.stringify({ error: 'Method not allowed' })); return; }
+        try {
+          const body = await readJsonBody(req);
+          const { handleClaim } = await import('./api/_points');
+          const { status, body: out } = await handleClaim(body);
+          res.statusCode = status;
+          res.end(JSON.stringify(out));
+        } catch {
+          res.statusCode = 500;
+          res.end(JSON.stringify({ error: 'Server error' }));
+        }
+      });
+    },
+  };
+}
+
+export default defineConfig(({ mode }) => {
+    // Expose the vars the dev reward endpoints need (server-side, non-VITE too).
+    const env = loadEnv(mode, process.cwd(), '');
+    for (const key of ['FIREBASE_SERVICE_ACCOUNT', 'VITE_STELLAR_NETWORK', 'STELLAR_NETWORK']) {
+      if (env[key]) process.env[key] = env[key];
+    }
+
     return {
       server: {
         port: 3000,
         host: '0.0.0.0',
       },
-      plugins: [react(), devNewsApi(), devEcosystemApi()],
+      plugins: [react(), devNewsApi(), devEcosystemApi(), devRewardApi()],
       resolve: {
         alias: {
           '@': path.resolve(__dirname, '.'),

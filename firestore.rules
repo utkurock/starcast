@@ -4,10 +4,17 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // User profiles: public read, owner-only write
+    // User profiles: public read, owner-only write — EXCEPT the reward fields
+    // (points/streak/claim state), which only the trusted server may write via
+    // the Admin SDK. This makes points impossible to grant from the client.
     match /users/{userId} {
       allow read: if true;
-      allow write: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId
+                    && !request.resource.data.keys().hasAny(
+                         ['points', 'streak', 'lastClaimAt', 'claimCount', 'lastClaimTxHash']);
+      allow update: if request.auth != null && request.auth.uid == userId
+                    && !request.resource.data.diff(resource.data).affectedKeys().hasAny(
+                         ['points', 'streak', 'lastClaimAt', 'claimCount', 'lastClaimTxHash']);
     }
 
     // Prediction markets: public read, any signed-in user can create

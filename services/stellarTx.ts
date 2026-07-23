@@ -1,8 +1,12 @@
-import { Horizon, TransactionBuilder, Operation, BASE_FEE } from '@stellar/stellar-sdk';
+import { Horizon, TransactionBuilder, Operation, Memo, BASE_FEE } from '@stellar/stellar-sdk';
 import { HORIZON_URL, STELLAR_NETWORK } from '../contexts/StellarWalletContext';
 
 const server = new Horizon.Server(HORIZON_URL);
 const IS_TESTNET = STELLAR_NETWORK.includes('Test SDF Network');
+
+// Memo the server checks to confirm a tx is a Rivarly daily claim (not some
+// unrelated payment the user happened to make).
+export const CLAIM_MEMO = 'rvly:claim';
 
 // Fund a brand-new testnet account via friendbot so it can pay tx fees.
 async function fundWithFriendbot(address: string): Promise<void> {
@@ -61,6 +65,7 @@ export async function submitDailyClaimTx(
     // No-op operation: bumping to a value below the current sequence changes
     // nothing on-chain, so the only cost is the base network fee.
     .addOperation(Operation.bumpSequence({ bumpTo: '0' }))
+    .addMemo(Memo.text(CLAIM_MEMO))
     .setTimeout(120)
     .build();
 
