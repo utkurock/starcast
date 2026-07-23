@@ -1,3 +1,8 @@
+// Buffer/global polyfills for @stellar/stellar-sdk (XDR encoding) in the browser.
+import { Buffer } from 'buffer';
+(globalThis as any).Buffer = (globalThis as any).Buffer || Buffer;
+(globalThis as any).global = (globalThis as any).global || globalThis;
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';

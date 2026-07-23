@@ -16,7 +16,7 @@ const WalletGlyph: React.FC<{ className?: string }> = ({ className }) => (
 );
 
 // Site-styled wallet picker (replaces the kit's default modal).
-const WalletPicker: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+export const WalletPicker: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { listWallets, selectWallet, connecting, networkLabel } = useStellarWallet();
   const [wallets, setWallets] = useState<ISupportedWallet[] | null>(null);
   const [error, setError] = useState<string | null>(null);

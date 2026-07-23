@@ -51,6 +51,8 @@ interface StellarWalletContextValue {
   listWallets: () => Promise<ISupportedWallet[]>;
   selectWallet: (id: string) => Promise<void>;
   disconnect: () => Promise<void>;
+  /** Sign an XDR with the connected wallet on the active network. Returns signed XDR. */
+  signTransaction: (xdr: string) => Promise<string>;
 }
 
 const StellarWalletContext = createContext<StellarWalletContextValue>({
@@ -61,6 +63,7 @@ const StellarWalletContext = createContext<StellarWalletContextValue>({
   listWallets: async () => [],
   selectWallet: async () => {},
   disconnect: async () => {},
+  signTransaction: async () => { throw new Error('Wallet not connected'); },
 });
 
 export const StellarWalletProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -111,9 +114,18 @@ export const StellarWalletProvider: React.FC<{ children: React.ReactNode }> = ({
     setAddress(null);
   }, []);
 
+  const signTransaction = useCallback(async (xdr: string) => {
+    ensureInit();
+    const { signedTxXdr } = await StellarWalletsKit.signTransaction(xdr, {
+      networkPassphrase: STELLAR_NETWORK,
+      address: address ?? undefined,
+    });
+    return signedTxXdr;
+  }, [address]);
+
   return (
     <StellarWalletContext.Provider
-      value={{ address, connecting, isMainnet: IS_MAINNET, networkLabel: STELLAR_NETWORK_LABEL, listWallets, selectWallet, disconnect }}
+      value={{ address, connecting, isMainnet: IS_MAINNET, networkLabel: STELLAR_NETWORK_LABEL, listWallets, selectWallet, disconnect, signTransaction }}
     >
       {children}
     </StellarWalletContext.Provider>
