@@ -379,8 +379,8 @@ const SocialFeed: React.FC<SocialFeedProps> = ({
 
   return (
     <div className="min-h-screen bg-background-body flex">
-      {/* Main Content - White Theme - Wider - No left spacer */}
-      <div className="flex-1 bg-background-card border-r border-border-default">
+      {/* Main Content - matches the app's body background used on every other page */}
+      <div className="flex-1 bg-background-body border-r border-border-default">
         {/* Header */}
         <div className="sticky top-0 bg-background-body/80 backdrop-blur-sm border-b border-border-default z-40">
           <div className="px-6 py-3">

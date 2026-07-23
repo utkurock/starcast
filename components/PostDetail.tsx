@@ -199,8 +199,8 @@ const PostDetail: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-background-body flex">
-            {/* Main Content - No vertical borders */}
-            <div className="flex-1 bg-background-card border-r border-border-default">
+            {/* Main Content - matches the app body background used across pages */}
+            <div className="flex-1 bg-background-body border-r border-border-default">
                 {/* Header with back button */}
                 <div className="sticky top-0 z-10 bg-background-body/80 backdrop-blur-md border-b border-border-default">
                     <div className="px-6 py-3">
