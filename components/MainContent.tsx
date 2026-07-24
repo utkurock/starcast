@@ -92,7 +92,7 @@ const MainContent: React.FC<MainContentProps> = ({ activeCategory, setActiveCate
               ))}
             </div>
             
-            {displayMarkets.length === 0 && (
+            {displayMarkets.length === 0 && activeCategory !== 'All' && (
               <div className="text-center py-20">
                 <div className="mx-auto w-16 h-16 bg-background-hover rounded-2xl flex items-center justify-center mb-4 text-text-tertiary">
                   <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
