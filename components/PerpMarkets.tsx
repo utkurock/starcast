@@ -11,9 +11,9 @@ import {
   type PerpDirection,
   type PerpPosition,
 } from '../services/perpService';
-import { COINS, COIN_META, type Coin } from '../services/pricesService';
+import { COINS, COIN_META, type Coin, type Interval } from '../services/pricesService';
 import CoinIcon from './CoinIcon';
-import TradingViewChart from './TradingViewChart';
+import PerpChart from './PerpChart';
 
 const DURATIONS: { sec: number; label: string }[] = [
   { sec: 60, label: '1m' },
@@ -34,7 +34,7 @@ const mmss = (total: number): string => {
   return `${m}:${String(s).padStart(2, '0')}`;
 };
 
-const TV_INTERVAL: Record<number, string> = { 60: '1', 300: '5', 900: '15' };
+const CHART_INTERVAL: Record<number, Interval> = { 60: '1m', 300: '5m', 900: '15m' };
 
 // ---- A single position row (live countdown + auto-settle) -------------------
 const PositionRow: React.FC<{ pos: PerpPosition; livePrice?: number }> = ({ pos, livePrice }) => {
@@ -145,7 +145,7 @@ const PerpMarkets: React.FC<PerpMarketsProps> = ({ initialCoin, initialDirection
 
   const live = prices[coin];
   const stakeNum = Math.floor(Number(stake)) || 0;
-  const canSubmit = uid && stakeNum >= 10 && stakeNum <= points && !submitting;
+  const canSubmit = uid && stakeNum >= 1 && stakeNum <= points && !submitting;
 
   const setPct = (pct: number) => setStake(String(Math.floor((points * pct) / 100)));
 
@@ -220,7 +220,7 @@ const PerpMarkets: React.FC<PerpMarketsProps> = ({ initialCoin, initialDirection
               )}
             </div>
           </div>
-          <TradingViewChart coin={coin} interval={TV_INTERVAL[durationSec] || '1'} height={340} />
+          <PerpChart coin={coin} interval={CHART_INTERVAL[durationSec] || '1m'} height={340} livePrice={live?.price} />
         </div>
 
         {/* Trade panel */}
@@ -279,7 +279,7 @@ const PerpMarkets: React.FC<PerpMarketsProps> = ({ initialCoin, initialDirection
               value={stake}
               onChange={(e) => setStake(e.target.value)}
               placeholder="0"
-              min={10}
+              min={1}
               className="w-full px-3 py-2.5 bg-background-hover border border-border-default rounded-lg text-text-primary focus:outline-none focus:border-border-strong transition-colors tabular-nums"
             />
           </div>
@@ -314,8 +314,8 @@ const PerpMarkets: React.FC<PerpMarketsProps> = ({ initialCoin, initialDirection
               ? 'Sign in to trade'
               : submitting
               ? 'Opening…'
-              : stakeNum < 10
-              ? 'Min stake 10 pts'
+              : stakeNum < 1
+              ? 'Min stake 1 pt'
               : stakeNum > points
               ? 'Not enough points'
               : `${direction === 'long' ? 'Go Long' : 'Go Short'} · ${durationSec / 60}m`}

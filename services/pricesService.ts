@@ -17,6 +17,9 @@ export interface CoinPrice {
 }
 export type PriceMap = Partial<Record<Coin, CoinPrice>>;
 
+export type Interval = '1m' | '5m' | '15m';
+export interface Candle { t: number; o: number; h: number; l: number; c: number }
+
 export const fetchPrices = async (): Promise<PriceMap> => {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 9000);
@@ -27,6 +30,22 @@ export const fetchPrices = async (): Promise<PriceMap> => {
     return data && typeof data === 'object' ? (data as PriceMap) : {};
   } catch {
     return {};
+  } finally {
+    clearTimeout(timer);
+  }
+};
+
+// Price history for the custom Perp chart (our own /api/prices?klines endpoint).
+export const fetchKlines = async (coin: Coin, interval: Interval = '1m', limit = 90): Promise<Candle[]> => {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 9000);
+  try {
+    const res = await fetch(`/api/prices?klines=${coin}&interval=${interval}&limit=${limit}`, { signal: controller.signal });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? (data as Candle[]) : [];
+  } catch {
+    return [];
   } finally {
     clearTimeout(timer);
   }

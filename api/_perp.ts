@@ -19,7 +19,7 @@ export interface HandlerResult {
 }
 
 const DURATIONS = new Set([60, 300, 900]); // 1 / 5 / 15 minutes
-const MIN_STAKE = 10;
+const MIN_STAKE = 1;
 const MAX_STAKE = 100_000;
 const MAX_OPEN = 10; // concurrent open positions per user
 const isCoin = (v: unknown): v is Coin => typeof v === 'string' && (COINS as string[]).includes(v);

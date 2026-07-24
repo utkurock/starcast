@@ -109,3 +109,54 @@ export async function getSpotPrice(coin: Coin): Promise<number | null> {
   const p = map?.[coin]?.price;
   return typeof p === 'number' && Number.isFinite(p) && p > 0 ? p : null;
 }
+
+// ---- Klines (price history for the custom Perp chart) -----------------------
+
+export type Interval = '1m' | '5m' | '15m';
+export interface Candle { t: number; o: number; h: number; l: number; c: number }
+
+const CG_DAYS: Record<Interval, number> = { '1m': 1, '5m': 1, '15m': 1 };
+
+async function klinesFromBinance(coin: Coin, interval: Interval, limit: number): Promise<Candle[]> {
+  try {
+    const res = await timedFetch(
+      `https://api.binance.com/api/v3/klines?symbol=${BINANCE_SYMBOL[coin]}&interval=${interval}&limit=${Math.min(Math.max(limit, 1), 500)}`
+    );
+    if (!res.ok) return [];
+    const arr = await res.json();
+    if (!Array.isArray(arr)) return [];
+    return arr.map((k: any[]) => ({
+      t: Number(k[0]),
+      o: Number(k[1]),
+      h: Number(k[2]),
+      l: Number(k[3]),
+      c: Number(k[4]),
+    }));
+  } catch {
+    return [];
+  }
+}
+
+// Fallback for networks/regions where Binance is blocked. CoinGecko's free
+// market_chart returns [ts, price] points (≈5-min granularity for 1 day), which
+// is plenty for a minimal line chart — we flatten each into a close-only candle.
+async function klinesFromCoinGecko(coin: Coin, interval: Interval, limit: number): Promise<Candle[]> {
+  try {
+    const res = await timedFetch(
+      `https://api.coingecko.com/api/v3/coins/${COINGECKO_ID[coin]}/market_chart?vs_currency=usd&days=${CG_DAYS[interval]}`
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    const prices: [number, number][] = Array.isArray(data?.prices) ? data.prices : [];
+    return prices.slice(-limit).map(([t, p]) => ({ t: Number(t), o: Number(p), h: Number(p), l: Number(p), c: Number(p) }));
+  } catch {
+    return [];
+  }
+}
+
+/** Recent price history for the perp chart. Binance first, CoinGecko fallback. */
+export async function getKlines(coin: Coin, interval: Interval = '1m', limit = 90): Promise<Candle[]> {
+  const b = await klinesFromBinance(coin, interval, limit);
+  if (b.length) return b;
+  return klinesFromCoinGecko(coin, interval, limit);
+}
