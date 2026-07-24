@@ -137,3 +137,7 @@ export const useStellarWallet = () => useContext(StellarWalletContext);
 // Shorten an address for display: GABC…WXYZ
 export const shortenAddress = (addr: string): string =>
   addr.length > 10 ? `${addr.slice(0, 4)}…${addr.slice(-4)}` : addr;
+
+// Stellar Expert explorer link for a transaction hash, on the active network.
+export const stellarExpertTxUrl = (hash: string): string =>
+  `https://stellar.expert/explorer/${IS_MAINNET ? 'public' : 'testnet'}/tx/${hash}`;

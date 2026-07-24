@@ -1,17 +1,21 @@
-// Trusted Perp (price up/down) game logic. Pure points, no on-chain tx.
+// Trusted Perp (price up/down) game logic. Opening a position requires a real
+// on-chain XLM tx from the user's linked wallet (memo hash-bound to the trade),
+// verified on Horizon — the same proof-of-action model as bets/claims. Stakes
+// and payouts are still points; the tx is the on-chain receipt for the trade.
 //
 // Fairness/anti-cheat: the server fetches BOTH the entry price (at open) and the
 // exit price (at settle) itself — the client never supplies a price, a stake
 // result, or the outcome. The stake is escrowed (deducted) on open, so a user
 // can never open beyond their balance, and settlement is guarded against
-// double-payout inside a Firestore transaction. Payout is double-or-nothing:
-// correct direction returns 2x the stake (net +stake), wrong loses the stake, an
-// exactly-flat price refunds the stake.
+// double-payout inside a Firestore transaction. Each open tx is single-use
+// (perpTx lock). Payout is double-or-nothing: correct direction returns 2x the
+// stake (net +stake), wrong loses the stake, an exactly-flat price refunds it.
 
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import { getAdminDb, verifyUid } from './_adminFirebase';
 import { getSpotPrice, COINS, type Coin } from './_prices';
 import { bumpDailyLeaderboard } from './_points';
+import { verifyAppTx, perpMemoHash } from './_serverStellar';
 
 export interface HandlerResult {
   status: number;
@@ -27,6 +31,7 @@ const isSafeId = (s: string) => /^[A-Za-z0-9_-]{1,128}$/.test(s);
 
 export async function handlePerpOpen(input: {
   idToken?: string;
+  txHash?: string;
   coin?: string;
   direction?: string;
   durationSec?: number;
@@ -42,25 +47,40 @@ export async function handlePerpOpen(input: {
   const direction = input.direction === 'long' || input.direction === 'short' ? input.direction : '';
   const durationSec = Number(input.durationSec);
   const stake = Math.floor(Number(input.stake));
+  const txHash = typeof input.txHash === 'string' ? input.txHash : '';
 
   if (!isCoin(coin)) return { status: 400, body: { error: 'Unknown coin.' } };
   if (!direction) return { status: 400, body: { error: 'Pick long or short.' } };
   if (!DURATIONS.has(durationSec)) return { status: 400, body: { error: 'Invalid duration.' } };
   if (!Number.isFinite(stake) || stake < MIN_STAKE) return { status: 400, body: { error: `Minimum stake is ${MIN_STAKE} points.` } };
   if (stake > MAX_STAKE) return { status: 400, body: { error: `Maximum stake is ${MAX_STAKE} points.` } };
+  if (!txHash || !isSafeId(txHash)) return { status: 400, body: { error: 'Invalid transaction.' } };
+
+  // Require a linked wallet and verify the on-chain trade tx (memo hash-binds it
+  // to this uid + exact trade params), before touching any balance.
+  const userRef = db.collection('users').doc(uid);
+  const preSnap = await userRef.get();
+  const preData: any = preSnap.exists ? preSnap.data() : {};
+  const wallet: string | undefined = preData.walletAddress;
+  if (!wallet) return { status: 400, body: { error: 'Connect and link a Stellar wallet first.' } };
+
+  const verify = await verifyAppTx({ txHash, expectedSource: wallet, expectedMemoHash: perpMemoHash(uid, coin, direction, durationSec, stake) });
+  if (!verify.ok) return { status: 400, body: { error: verify.reason || 'Transaction could not be verified.' } };
 
   // Fetch the entry price BEFORE touching balance — if the feed is down we abort
   // without escrowing anything.
   const entryPrice = await getSpotPrice(coin);
   if (entryPrice === null) return { status: 502, body: { error: 'Price feed unavailable. Try again.' } };
 
-  const userRef = db.collection('users').doc(uid);
   const posRef = db.collection('perpPositions').doc();
+  const lockRef = db.collection('perpTx').doc(txHash); // single-use guard per tx
   const nowMs = Date.now();
   const expiresAt = Timestamp.fromMillis(nowMs + durationSec * 1000);
 
   try {
     await db.runTransaction(async (tx) => {
+      const lockSnap = await tx.get(lockRef);
+      if (lockSnap.exists) throw new Error('REPLAY');
       const userSnap = await tx.get(userRef);
       const userData: any = userSnap.exists ? userSnap.data() : {};
       const points = Number(userData.points || 0);
@@ -72,6 +92,7 @@ export async function handlePerpOpen(input: {
         { points: FieldValue.increment(-stake), openPerpCount: FieldValue.increment(1) },
         { merge: true }
       );
+      tx.set(lockRef, { uid, posId: posRef.id, at: FieldValue.serverTimestamp() });
       tx.set(posRef, {
         uid,
         coin,
@@ -81,11 +102,14 @@ export async function handlePerpOpen(input: {
         durationSec,
         leverage: 1,
         status: 'open',
+        txHash,
+        walletAddress: wallet,
         openedAt: FieldValue.serverTimestamp(),
         expiresAt,
       });
     });
   } catch (e: any) {
+    if (e?.message === 'REPLAY') return { status: 409, body: { error: 'This transaction has already been used.' } };
     if (e?.message === 'INSUFFICIENT') return { status: 400, body: { error: 'Not enough points to stake.' } };
     if (e?.message === 'TOO_MANY') return { status: 409, body: { error: `You already have ${MAX_OPEN} open positions.` } };
     return { status: 500, body: { error: 'Could not open position.' } };
@@ -93,7 +117,7 @@ export async function handlePerpOpen(input: {
 
   return {
     status: 200,
-    body: { id: posRef.id, coin, direction, stake, entryPrice, durationSec, expiresAt: expiresAt.toMillis() },
+    body: { id: posRef.id, coin, direction, stake, entryPrice, durationSec, expiresAt: expiresAt.toMillis(), txHash },
   };
 }
 

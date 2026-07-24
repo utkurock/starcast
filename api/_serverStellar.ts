@@ -18,6 +18,8 @@ export const claimMemoHash = (uid: string) => sha256b64(`claim:${uid}`);
 export const betMemoHash = (uid: string, marketId: string, side: 'yes' | 'no') =>
   sha256b64(`bet:${side}:${marketId}:${uid}`);
 export const taskMemoHash = (uid: string, taskId: string) => sha256b64(`task:${taskId}:${uid}`);
+export const perpMemoHash = (uid: string, coin: string, direction: 'long' | 'short', durationSec: number, stake: number) =>
+  sha256b64(`perp:${direction}:${coin}:${durationSec}:${stake}:${uid}`);
 
 const RECENT_MS = 15 * 60 * 1000; // a reward tx must be at most 15 minutes old
 

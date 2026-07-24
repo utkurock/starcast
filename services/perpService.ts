@@ -1,6 +1,7 @@
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import type { Coin } from './pricesService';
+import { submitPerpTx, ClaimTxError } from './stellarTx';
 
 export class PerpError extends Error {}
 
@@ -19,6 +20,7 @@ export interface PerpPosition {
   status: PerpStatus;
   expiresAt: number; // ms epoch
   openedAt: number; // ms epoch
+  txHash?: string; // on-chain open receipt
   // present once settled
   outcome?: PerpOutcome;
   exitPrice?: number;
@@ -34,6 +36,7 @@ export interface OpenResult {
   entryPrice: number;
   durationSec: number;
   expiresAt: number;
+  txHash: string;
 }
 
 export interface SettleResult {
@@ -45,22 +48,44 @@ export interface SettleResult {
   pnl: number;
 }
 
-/** Open a perp position. The server fetches the entry price and escrows the stake. */
+/**
+ * Open a perp position: sign+submit the on-chain open tx (memo bound to the uid
+ * and exact trade params), then ask the trusted server to verify it, escrow the
+ * stake and record the position. The server fetches the entry price itself.
+ */
 export const openPerp = async (params: {
+  uid: string;
+  address: string;
   coin: Coin;
   direction: PerpDirection;
   durationSec: number;
   stake: number;
+  sign: (xdr: string) => Promise<string>;
 }): Promise<OpenResult> => {
   const idToken = await auth.currentUser?.getIdToken();
   if (!idToken) throw new PerpError('Please wait for your session to finish loading.');
+
+  let txHash: string;
+  try {
+    txHash = await submitPerpTx(params.address, params.uid, params.coin, params.direction, params.durationSec, params.stake, params.sign);
+  } catch (e) {
+    throw new PerpError(e instanceof ClaimTxError ? e.message : 'Could not submit your trade.');
+  }
 
   let res: Response;
   try {
     res = await fetch('/api/perp', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ action: 'open', idToken, ...params }),
+      body: JSON.stringify({
+        action: 'open',
+        idToken,
+        txHash,
+        coin: params.coin,
+        direction: params.direction,
+        durationSec: params.durationSec,
+        stake: params.stake,
+      }),
     });
   } catch {
     throw new PerpError('Could not reach the perp server. Please try again.');
@@ -119,6 +144,7 @@ export const subscribeToMyPositions = (
           status: data.status,
           expiresAt: toMs(data.expiresAt),
           openedAt: toMs(data.openedAt),
+          txHash: data.txHash,
           outcome: data.outcome,
           exitPrice: data.exitPrice !== undefined ? Number(data.exitPrice) : undefined,
           payout: data.payout !== undefined ? Number(data.payout) : undefined,

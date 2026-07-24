@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useFirebase } from '../contexts/FirebaseContext';
+import { useStellarWallet, stellarExpertTxUrl } from '../contexts/StellarWalletContext';
 import { usePrices } from '../hooks/usePrices';
 import { useCountdown } from '../hooks/useCountdown';
 import { subscribeToPoints } from '../services/pointsService';
@@ -75,9 +76,21 @@ const PositionRow: React.FC<{ pos: PerpPosition; livePrice?: number }> = ({ pos,
           </span>
           <span className="text-xs text-text-tertiary">· {fmtPts(pos.stake)} pts</span>
         </div>
-        <div className="text-xs text-text-tertiary mt-0.5">
-          Entry {fmtPrice(pos.entryPrice)}
-          {pos.status === 'settled' && pos.exitPrice !== undefined && <> · Exit {fmtPrice(pos.exitPrice)}</>}
+        <div className="text-xs text-text-tertiary mt-0.5 flex items-center gap-1.5 flex-wrap">
+          <span>
+            Entry {fmtPrice(pos.entryPrice)}
+            {pos.status === 'settled' && pos.exitPrice !== undefined && <> · Exit {fmtPrice(pos.exitPrice)}</>}
+          </span>
+          {pos.txHash && (
+            <a
+              href={stellarExpertTxUrl(pos.txHash)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-0.5 text-text-tertiary hover:text-text-primary underline decoration-dotted"
+            >
+              tx ↗
+            </a>
+          )}
         </div>
       </div>
 
@@ -118,6 +131,7 @@ interface PerpMarketsProps {
 
 const PerpMarkets: React.FC<PerpMarketsProps> = ({ initialCoin, initialDirection }) => {
   const { userProfile, user } = useFirebase();
+  const { address, signTransaction } = useStellarWallet();
   const uid = userProfile?.uid || user?.uid || null;
   const { prices } = usePrices(3000);
 
@@ -145,7 +159,7 @@ const PerpMarkets: React.FC<PerpMarketsProps> = ({ initialCoin, initialDirection
 
   const live = prices[coin];
   const stakeNum = Math.floor(Number(stake)) || 0;
-  const canSubmit = uid && stakeNum >= 1 && stakeNum <= points && !submitting;
+  const canSubmit = uid && address && stakeNum >= 1 && stakeNum <= points && !submitting;
 
   const setPct = (pct: number) => setStake(String(Math.floor((points * pct) / 100)));
 
@@ -154,7 +168,7 @@ const PerpMarkets: React.FC<PerpMarketsProps> = ({ initialCoin, initialDirection
     setSubmitting(true);
     setMsg(null);
     try {
-      await openPerp({ coin, direction, durationSec, stake: stakeNum });
+      await openPerp({ uid: uid!, address: address!, coin, direction, durationSec, stake: stakeNum, sign: signTransaction });
       setStake('');
       setMsg({ kind: 'ok', text: `${direction === 'long' ? 'Long' : 'Short'} opened on ${coin} for ${fmtPts(stakeNum)} pts.` });
     } catch (e) {
@@ -162,7 +176,7 @@ const PerpMarkets: React.FC<PerpMarketsProps> = ({ initialCoin, initialDirection
     } finally {
       setSubmitting(false);
     }
-  }, [canSubmit, coin, direction, durationSec, stakeNum]);
+  }, [canSubmit, uid, address, signTransaction, coin, direction, durationSec, stakeNum]);
 
   const openPositions = positions.filter((p) => p.status === 'open');
   const history = positions.filter((p) => p.status === 'settled').slice(0, 20);
@@ -312,8 +326,10 @@ const PerpMarkets: React.FC<PerpMarketsProps> = ({ initialCoin, initialDirection
           >
             {!uid
               ? 'Sign in to trade'
+              : !address
+              ? 'Connect a Stellar wallet'
               : submitting
-              ? 'Opening…'
+              ? 'Confirm in wallet…'
               : stakeNum < 1
               ? 'Min stake 1 pt'
               : stakeNum > points
